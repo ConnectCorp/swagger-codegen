@@ -79,3 +79,8 @@ samples/client/petstore/swift/SwaggerClientTests/Pods/Pods.xcodeproj/xcshareddat
 samples/client/petstore/csharp/SwaggerClientTest/bin/Debug/
 samples/client/petstore/csharp/SwaggerClientTest/obj/Debug/
 **/.gradle/
+
+modules/swagger-codegen/build/
+modules/swagger-codegen-cli/build/
+modules/swagger-codegen-maven-plugin/build/
+modules/swagger-generator/build/
