@@ -1,0 +1,25 @@
+
+apply plugin: 'war'
+
+description = 'swagger-generator'
+dependencies {
+    compile group: 'io.swagger', name: 'swagger-jersey2-jaxrs', version:'1.5.7'
+  compile project(':swagger-codegen')
+    compile group: 'ch.qos.logback', name: 'logback-classic', version:'1.0.1'
+    compile group: 'ch.qos.logback', name: 'logback-core', version:'1.0.1'
+    compile group: 'javax.servlet', name: 'servlet-api', version:'2.5'
+    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet-core', version:'2.6'
+    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-multipart', version:'2.6'
+    compile group: 'net.lingala.zip4j', name: 'zip4j', version:'1.3.2'
+    compile group: 'org.eclipse.jetty', name: 'jetty-server', version:'9.2.9.v20150224'
+    compile group: 'org.eclipse.jetty', name: 'jetty-start', version:'9.2.9.v20150224'
+    compile group: 'org.eclipse.jetty', name: 'jetty-xml', version:'9.2.9.v20150224'
+    compile group: 'org.eclipse.jetty', name: 'jetty-webapp', version:'9.2.9.v20150224'
+    compile group: 'org.eclipse.jetty', name: 'jetty-deploy', version:'9.2.9.v20150224'
+    compile(group: 'org.eclipse.jetty', name: 'jetty-runner', version:'9.2.9.v20150224') {
+exclude(module: 'javax.el')
+    }
+  testCompile project(':swagger-codegen')
+    testCompile group: 'org.testng', name: 'testng', version:'6.9.6'
+}
+test.useTestNG()

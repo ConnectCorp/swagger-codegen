@@ -1,0 +1,26 @@
+
+description = 'swagger-codegen (core library)'
+dependencies {
+    compile group: 'io.swagger', name: 'swagger-parser', version:'1.0.18-SNAPSHOT'
+    compile group: 'io.swagger', name: 'swagger-compat-spec-parser', version:'1.0.18-SNAPSHOT'
+    compile group: 'io.swagger', name: 'swagger-core', version:'1.5.7'
+    compile group: 'com.samskivert', name: 'jmustache', version:'1.9'
+    compile group: 'commons-io', name: 'commons-io', version:'2.4'
+    compile group: 'org.apache.maven', name: 'maven-plugin-tools-api', version:'2.0'
+    compile group: 'org.apache.felix', name: 'maven-bundle-plugin', version:'2.3.4'
+    compile group: 'org.slf4j', name: 'slf4j-ext', version:'1.7.12'
+    compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.12'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version:'1.7.12'
+    compile group: 'commons-lang', name: 'commons-lang', version:'2.4'
+    compile group: 'commons-cli', name: 'commons-cli', version:'1.2'
+    testCompile group: 'org.testng', name: 'testng', version:'6.9.6'
+    testCompile group: 'org.reflections', name: 'reflections', version:'0.9.10'
+    testCompile group: 'org.jmockit', name: 'jmockit', version:'1.19'
+}
+test.useTestNG()
+
+task packageTests(type: Jar) {
+  from sourceSets.test.output
+  classifier = 'tests'
+}
+artifacts.archives packageTests

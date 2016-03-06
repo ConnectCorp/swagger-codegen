@@ -1,0 +1,10 @@
+rootProject.name = 'swagger-codegen-project'
+include ':swagger-codegen'
+include ':swagger-codegen-cli'
+include ':swagger-codegen-maven-plugin'
+include ':swagger-generator'
+
+project(':swagger-codegen').projectDir = "$rootDir/modules/swagger-codegen" as File
+project(':swagger-codegen-cli').projectDir = "$rootDir/modules/swagger-codegen-cli" as File
+project(':swagger-codegen-maven-plugin').projectDir = "$rootDir/modules/swagger-codegen-maven-plugin" as File
+project(':swagger-generator').projectDir = "$rootDir/modules/swagger-generator" as File
