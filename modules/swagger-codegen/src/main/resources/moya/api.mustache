@@ -20,7 +20,7 @@ extension {{classname}}: TargetType {
     var path: String {
         switch self {
         {{#operation}}
-            case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
+        case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
             return "{{path}}"
         {{/operation}}
         }
@@ -39,11 +39,11 @@ extension {{classname}}: TargetType {
         switch self {
         {{#operation}}
             case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
-            return {{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
-                "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
-            ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
-                "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
-            ]{{/hasMore}}{{/queryParams}}
+                return {{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
+                    "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
+                ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
+                    "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
+                ]{{/hasMore}}{{/queryParams}}
         {{/operation}}
         }
     }
