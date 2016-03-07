@@ -21,4 +21,17 @@ public class SupportingFile {
 
         return builder.toString();
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof SupportingFile)) {
+            return false;
+        }
+
+        SupportingFile file = (SupportingFile) object;
+
+        return templateFile.equals(file.templateFile)
+            && folder.equals(file.folder)
+            && destinationFilename.equals(file.destinationFilename);
+    }
 }

@@ -43,6 +43,9 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
     public void processOpts() {
         super.processOpts();
 
+        supportingFiles.remove(new SupportingFile("AlamofireImplementations.mustache", sourceFolder, "AlamofireImplementations.swift"));
+        supportingFiles.remove(new SupportingFile("APIs.mustache", sourceFolder, "APIs.swift"));
+
         supportingFiles.add(new SupportingFile("Swift+URLEscapedString.mustache", sourceFolder, "String+URLEscapedString.swift"));
     }
 
