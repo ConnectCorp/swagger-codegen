@@ -15,10 +15,12 @@ enum {{classname}} {
 
 extension {{classname}}: TargetType {
 
+    var baseURL: NSURL { return NSURL(string: "{{basePath}}") }
+
     var path: String {
         switch self {
         {{#operation}}
-        case .{{operationId}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        case .{{operationId}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}):
             return "{{path}}"
         {{/operation}}
         }
@@ -27,7 +29,7 @@ extension {{classname}}: TargetType {
     var method: Moya.Method {
         switch self {
         {{#operation}}
-        case .{{operationId}}
+        case .{{operationId}}:
             return .{{httpMethod}}
         {{/operation}}
         }
@@ -36,10 +38,18 @@ extension {{classname}}: TargetType {
     var parameters: [String: AnyObject]? {
         switch self {
         {{#operation}}
-        case .{{operationId}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
-            return []
+        case .{{operationId}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}):
+            return {{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
+                "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
+            ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
+                "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
+            ]{{/hasMore}}{{/queryParams}}
         {{/operation}}
         }
+    }
+
+    var sampleData: NSData {
+        return NSData()
     }
 }
 {{/operations}}

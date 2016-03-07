@@ -2,6 +2,7 @@ package io.swagger.codegen.languages;
 
 import io.swagger.codegen.CodegenOperation;
 import io.swagger.codegen.CodegenType;
+import io.swagger.codegen.SupportingFile;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
@@ -39,6 +40,13 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
     }
 
     @Override
+    public void processOpts() {
+        super.processOpts();
+
+        supportingFiles.add(new SupportingFile("Swift+URLEscapedString.mustache", sourceFolder, "String+URLEscapedString.swift"));
+    }
+
+    @Override
     public String toOperationId(String operationId) {
         String id = super.toOperationId(operationId);
 
@@ -67,6 +75,7 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
             String param = matcher.group().substring(1, matcher.group().length() - 1);
             builder.append("\\(");
             builder.append(param);
+            builder.append(".URLEscapedString");
             builder.append(")");
 
             cursor = matcher.end();
