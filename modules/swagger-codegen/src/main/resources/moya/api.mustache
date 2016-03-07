@@ -20,7 +20,7 @@ extension {{classname}}: TargetType {
     var path: String {
         switch self {
         {{#operation}}
-        case .{{operationId}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}):
+            case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
             return "{{path}}"
         {{/operation}}
         }
@@ -38,7 +38,7 @@ extension {{classname}}: TargetType {
     var parameters: [String: AnyObject]? {
         switch self {
         {{#operation}}
-        case .{{operationId}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}):
+            case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
             return {{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
                 "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
             ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
