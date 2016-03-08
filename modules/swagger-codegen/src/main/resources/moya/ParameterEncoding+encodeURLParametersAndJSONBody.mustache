@@ -1,0 +1,26 @@
+import Moya
+
+extension ParameterEncoding {
+
+    func encodeURLParametersAndJSONBody(URLRequest: URLRequestConvertible, parameters: [String:AnyObject]?) -> (NSMutableURLRequest, NSError?) {
+        let body = parameters.removeValueForKey("=")
+
+        var (mutableURLRequest, _) = ParameterEncoding.URL.encode(URLRequest, parameters)
+
+        var encodingError: NSError? = nil
+
+        do {
+            let data = try NSJSONSerialization.dataWithJSONObject(body, options: NSJSONWritingOptions())
+
+            if mutableURLRequest.valueForHTTPHeaderField("Content-Type") == nil {
+                mutableURLRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            }
+
+            mutableURLRequest.HTTPBody = data
+        } catch {
+            encodingError = error as NSError
+        }
+
+        return (mutableURLRequest, encodingError)
+    }
+}

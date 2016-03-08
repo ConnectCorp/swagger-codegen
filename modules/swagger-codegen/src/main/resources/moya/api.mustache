@@ -29,8 +29,8 @@ var endpointClosure = { (target: {{classname}} -> Endpoint<{{classname}}> in
     let parameterEncoding: ParameterEncoding {
         switch target {
         {{#operation}}
-        case .{{operationId}}
-            return .{{^hasQueryParams}}{{^hasPathParams}}{{^hasBodyParam}}URL{{/hasBodyParam}}{{/hasPathParams}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasPathParams}}JSON{{/hasPathParams}}{{/hasBodyParam}}{{#hasQueryParams}}URL{{/hasQueryParams}}{{#hasPathParams}}{{#hasBodyParam}}JSON{{/hasBodyParam}}{{/hasPathParams}}{{#hasPathParams}}{{^hasBodyParam}}URL{{/hasBodyParam}}{{/hasPathParams}}
+        case .{{operationId}}:
+            return .{{^hasQueryParams}}{{^hasPathParams}}{{^hasBodyParam}}URL{{/hasBodyParam}}{{/hasPathParams}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasPathParams}}{{^hasQueryParams}}JSON{{/hasQueryParams}}{{/hasPathParams}}{{/hasBodyParam}}{{#hasQueryParams}}{{^hasBodyParam}}{{^hasPathParams}}URL{{/hasPathParams}}{{/hasBodyParam}}{{#hasBodyParam}}Custom(ParameterEncoding.encodeURLParametersAndJSONBody){{/hasBodyParam}}{{/hasQueryParams}}{{#hasPathParams}}{{#hasBodyParam}}JSON{{/hasBodyParam}}{{^hasBodyParam}}URL{{/hasBodyParam}}{{/hasPathParams}}
         {{/operation}}
         }
     }
