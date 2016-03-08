@@ -64,7 +64,9 @@ extension {{classname}}: TargetType {
         switch self {
         {{#operation}}
         case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
-            {{#hasBodyParam}}{{#allParams}}{{#isBodyParam}}return {{paramName}}.encodeToJson() as [String: AnyObject]{{/isBodyParam}}{{/allParams}}{{/hasBodyParam}}{{^hasBodyParam}}return {{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
+            return {{#hasBodyParam}}{{#hasQueryParams}}{{#allParams}}{{^secondaryParam}}[{{/secondaryParam}}
+                {{#isQueryParam}}"{{paramName}}": {{paramName}}{{/isQueryParam}}{{#isBodyParam}}"=": {{paramName}}.encodeToJson() as [String:AnyObject]{{/isBodyParam}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
+            ]{{/hasMore}}{{/allParams}}{{/hasQueryParams}}{{/hasBodyParam}}{{#hasBodyParam}}{{^hasQueryParams}}{{#allParams}}{{#isBodyParam}}{{paramName}}.encodeToJson() as [String:AnyObject]{{/isBodyParam}}{{/allParams}}{{/hasQueryParams}}{{/hasBodyParam}}{{^hasBodyParam}}{{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
                 "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
             ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
                 "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
