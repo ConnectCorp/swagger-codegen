@@ -7,10 +7,35 @@
 import Foundation
 import Moya
 
+let {{classname}}Provider = RxMoyaProvider<{{classname}}>(endpointClosure: endpointClosure)
+
 enum {{classname}} {
     {{#operation}}
         case {{operationId}}{{#hasParams}}({{#allParams}}{{dataType}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}
     {{/operation}}
+}
+
+var endpointClosure = { (target: {{classname}} -> Endpoint<{{classname}}> in
+    let endpoint = Endpoint<{{classname}}>(
+        URL: target.baseURL.URLByAppendingPathComponent(target.path).absoluteString,
+
+        sampleResponseClosure: { .NetworkResponse(200, target.sampleData) },
+
+        method: target.method,
+
+        parameters: target.parameters
+    )
+
+    let parameterEncoding: ParameterEncoding {
+        switch target {
+        {{#operation}}
+        case .{{operationId}}
+            return .{{^hasQueryParams}}{{^hasPathParams}}{{^hasBodyParam}}URL{{/hasBodyParam}}{{/hasPathParams}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasPathParams}}JSON{{/hasPathParams}}{{/hasBodyParam}}{{#hasQueryParams}}URL{{/hasQueryParams}}{{#hasPathParams}}{{#hasBodyParam}}JSON{{/hasBodyParam}}{{/hasPathParams}}{{#hasPathParams}}{{^hasBodyParam}}URL{{/hasBodyParam}}{{/hasPathParams}}
+        {{/operation}}
+        }
+    }
+
+    return endpoint.endpointByAddingParameterEncoding(parameterEncoding)
 }
 
 extension {{classname}}: TargetType {
@@ -39,11 +64,11 @@ extension {{classname}}: TargetType {
         switch self {
         {{#operation}}
             case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
-                return {{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
+                {{#hasBodyParam}}{{#allParams}}{{#isBodyParam}}return {{paramName}}.encodeToJson() as [String: AnyObject]{{/isBodyParam}}{{/allParams}}{{/hasBodyParam}}{{^hasBodyParam}}return {{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
                     "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
                     "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
-                ]{{/hasMore}}{{/queryParams}}
+                ]{{/hasMore}}{{/queryParams}}{{/hasBodyParam}}
         {{/operation}}
         }
     }
