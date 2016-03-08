@@ -63,18 +63,23 @@ extension {{classname}}: TargetType {
     var parameters: [String: AnyObject]? {
         switch self {
         {{#operation}}
-            case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
-                {{#hasBodyParam}}{{#allParams}}{{#isBodyParam}}return {{paramName}}.encodeToJson() as [String: AnyObject]{{/isBodyParam}}{{/allParams}}{{/hasBodyParam}}{{^hasBodyParam}}return {{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
-                    "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
-                ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
-                    "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
-                ]{{/hasMore}}{{/queryParams}}{{/hasBodyParam}}
+        case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
+            {{#hasBodyParam}}{{#allParams}}{{#isBodyParam}}return {{paramName}}.encodeToJson() as [String: AnyObject]{{/isBodyParam}}{{/allParams}}{{/hasBodyParam}}{{^hasBodyParam}}return {{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
+                "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
+            ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
+                "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
+            ]{{/hasMore}}{{/queryParams}}{{/hasBodyParam}}
         {{/operation}}
         }
     }
 
     var sampleData: NSData {
-        return NSData()
+        switch self {
+        {{#operation}}
+        case .{{operationId}}
+            return "{{#examples}}{{{example}}}{{/examples}}"
+        {{/operation}}
+        }
     }
 }
 {{/operations}}

@@ -51,9 +51,7 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
 
     @Override
     public String toOperationId(String operationId) {
-        String id = super.toOperationId(operationId);
-
-        return Character.toUpperCase(id.charAt(0)) + id.substring(1);
+        return initialCaps(super.toOperationId(operationId));
     }
 
     @Override
@@ -61,6 +59,14 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
         CodegenOperation op = super.fromOperation(path, httpMethod, operation, definitions, swagger);
 
         op.path = normalizePath(op.path);
+
+        if (op.examples != null) {
+            for (Map<String, String> example : op.examples) {
+                String exampleString = example.get("example");
+
+                example.put("example", normalizeExampleString(exampleString));
+            }
+        }
 
         return op;
     }
@@ -88,5 +94,9 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
         builder.append(after);
 
         return builder.toString();
+    }
+
+    private String normalizeExampleString(String exampleString) {
+        return exampleString.replaceAll("\"", "\\\\\"").replaceAll("\\s+", "");
     }
 }
