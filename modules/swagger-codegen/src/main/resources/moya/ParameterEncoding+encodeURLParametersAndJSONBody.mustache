@@ -1,11 +1,27 @@
-import Moya
+import Alamofire
 
 extension ParameterEncoding {
 
-    func encodeURLParametersAndJSONBody(URLRequest: URLRequestConvertible, parameters: [String:AnyObject]?) -> (NSMutableURLRequest, NSError?) {
-        let body = parameters.removeValueForKey("=")
+    static func encodeURLParametersAndJSONBody(URLRequest: URLRequestConvertible, parameters: [String:AnyObject]?) -> (NSMutableURLRequest, NSError?) {
 
-        var (mutableURLRequest, _) = ParameterEncoding.URL.encode(URLRequest, parameters)
+        func split(parameters: [String:AnyObject]) -> (queryParameters: [String:AnyObject], body: [String:AnyObject]) {
+            var queryParameters = [String:AnyObject]()
+            var body = [String:AnyObject]()
+
+            for (name, value) in parameters {
+                if let data = value as? [String:AnyObject] {
+                    body = data
+                } else {
+                    queryParameters[name] = value
+                }
+            }
+
+            return (queryParameters: queryParameters, body: body)
+        }
+
+        let (params, body) = split(parameters!)
+
+        let (mutableURLRequest, _) = ParameterEncoding.URL.encode(URLRequest, parameters: params)
 
         var encodingError: NSError? = nil
 

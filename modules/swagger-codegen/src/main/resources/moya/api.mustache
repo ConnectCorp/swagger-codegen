@@ -7,15 +7,13 @@
 import Foundation
 import Moya
 
-let {{classname}}Provider = RxMoyaProvider<{{classname}}>(endpointClosure: endpointClosure)
-
 enum {{classname}} {
     {{#operation}}
         case {{operationId}}{{#hasParams}}({{#allParams}}{{dataType}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}
     {{/operation}}
 }
 
-var endpointClosure = { (target: {{classname}} -> Endpoint<{{classname}}> in
+let {{classname}}Provider = MoyaProvider<{{classname}}>(endpointClosure: { (target: {{classname}}) -> Endpoint<{{classname}}> in
     let endpoint = Endpoint<{{classname}}>(
         URL: target.baseURL.URLByAppendingPathComponent(target.path).absoluteString,
 
@@ -26,7 +24,7 @@ var endpointClosure = { (target: {{classname}} -> Endpoint<{{classname}}> in
         parameters: target.parameters
     )
 
-    let parameterEncoding: ParameterEncoding {
+    var parameterEncoding: ParameterEncoding {
         switch target {
         {{#operation}}
         case .{{operationId}}:
@@ -36,11 +34,11 @@ var endpointClosure = { (target: {{classname}} -> Endpoint<{{classname}}> in
     }
 
     return endpoint.endpointByAddingParameterEncoding(parameterEncoding)
-}
+})
 
 extension {{classname}}: TargetType {
 
-    var baseURL: NSURL { return NSURL(string: "{{basePath}}") }
+    var baseURL: NSURL { return NSURL(string: "{{basePath}}")! }
 
     var path: String {
         switch self {
@@ -65,8 +63,8 @@ extension {{classname}}: TargetType {
         {{#operation}}
         case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
             return {{#hasBodyParam}}{{#hasQueryParams}}{{#allParams}}{{^secondaryParam}}[{{/secondaryParam}}
-                {{#isQueryParam}}"{{paramName}}": {{paramName}}{{/isQueryParam}}{{#isBodyParam}}"=": {{paramName}}.encodeToJson() as [String:AnyObject]{{/isBodyParam}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
-            ]{{/hasMore}}{{/allParams}}{{/hasQueryParams}}{{/hasBodyParam}}{{#hasBodyParam}}{{^hasQueryParams}}{{#allParams}}{{#isBodyParam}}{{paramName}}.encodeToJson() as [String:AnyObject]{{/isBodyParam}}{{/allParams}}{{/hasQueryParams}}{{/hasBodyParam}}{{^hasBodyParam}}{{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
+                {{#isQueryParam}}"{{paramName}}": {{paramName}}{{/isQueryParam}}{{#isBodyParam}}"=": {{paramName}}.encodeToJSON() as! [String:AnyObject]{{/isBodyParam}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
+            ]{{/hasMore}}{{/allParams}}{{/hasQueryParams}}{{/hasBodyParam}}{{#hasBodyParam}}{{^hasQueryParams}}{{#allParams}}{{#isBodyParam}}{{paramName}}.encodeToJSON() as! [String:AnyObject]{{/isBodyParam}}{{/allParams}}{{/hasQueryParams}}{{/hasBodyParam}}{{^hasBodyParam}}{{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
                 "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
             ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
                 "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
@@ -78,8 +76,8 @@ extension {{classname}}: TargetType {
     var sampleData: NSData {
         switch self {
         {{#operation}}
-        case .{{operationId}}
-            return "{{#examples}}{{{example}}}{{/examples}}"
+        case .{{operationId}}:
+            return "{{#examples}}{{{example}}}{{/examples}}".dataUsingEncoding(NSUTF8StringEncoding)!
         {{/operation}}
         }
     }
