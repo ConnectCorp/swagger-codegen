@@ -13,7 +13,7 @@ enum {{classname}} {
     {{/operation}}
 }
 
-let {{classname}}Provider = MoyaProvider<{{classname}}>(endpointClosure: { (target: {{classname}}) -> Endpoint<{{classname}}> in
+let {{classname}}Provider = RxMoyaProvider<{{classname}}>(endpointClosure: { (target: {{classname}}) -> Endpoint<{{classname}}> in
     let endpoint = Endpoint<{{classname}}>(
         URL: target.baseURL.URLByAppendingPathComponent(target.path).absoluteString,
 
@@ -58,7 +58,7 @@ extension {{classname}}: TargetType {
         }
     }
 
-    var parameters: [String: AnyObject]? {
+    var parameters: [String:AnyObject]? {
         switch self {
         {{#operation}}
         case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
