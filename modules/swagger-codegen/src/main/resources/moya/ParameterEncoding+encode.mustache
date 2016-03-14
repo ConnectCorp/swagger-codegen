@@ -3,22 +3,22 @@ import Alamofire
 extension ParameterEncoding {
 
     static func encode(URLRequest: URLRequestConvertible, parameters: [String:AnyObject]?) -> (NSMutableURLRequest, NSError?) {
-        let (queryParams, body) = (parameters[Parameters.Query], parameters[Parameters.Body])
+        let (queryParameters, body) = (parameters![Parameters.Query] as! [String:AnyObject], parameters![Parameters.Body] as! [String:AnyObject])
 
-        let (mutableURLRequest, _) = ParameterEncoding.URL.encode(URLRequest, parameters: queryParams)
+        var (mutableURLRequest, encodingError) = ParameterEncoding.URL.encode(URLRequest, parameters: queryParameters)
 
-        var encodingError: NSError? = nil
+        if body.count > 0 {
+            do {
+                let data = try NSJSONSerialization.dataWithJSONObject(body, options: NSJSONWritingOptions())
 
-        do {
-            let data = try NSJSONSerialization.dataWithJSONObject(BODY, options: NSJSONWritingOptions())
+                if mutableURLRequest.valueForHTTPHeaderField("Content-Type") == nil {
+                    mutableURLRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                }
 
-            if mutableURLRequest.valueForHTTPHeaderField("Content-Type") == nil {
-                mutableURLRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                mutableURLRequest.HTTPBody = data
+            } catch {
+                encodingError = error as NSError
             }
-
-            mutableURLRequest.HTTPBody = data
-        } catch {
-            encodingError = error as NSError
         }
 
         return (mutableURLRequest, encodingError)
