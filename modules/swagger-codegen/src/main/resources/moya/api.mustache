@@ -43,7 +43,7 @@ extension {{classname}}: TargetType {
     var path: String {
         switch self {
         {{#operation}}
-        case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
+        case .{{operationId}}{{#hasParams}}({{#allParams}}let {{#isPathParam}}{{paramName}}{{/isPathParam}}{{^isPathParam}}_{{/isPathParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
             return "{{path}}"
         {{/operation}}
         }
@@ -61,7 +61,7 @@ extension {{classname}}: TargetType {
     var parameters: [String:AnyObject]? {
         switch self {
         {{#operation}}
-        case .{{operationId}}{{#hasParams}}({{#allParams}}let {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
+        case .{{operationId}}{{#hasParams}}({{#allParams}}let {{#isPathParam}}_{{/isPathParam}}{{^isPathParam}}{{paramName}}{{/isPathParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
             return {{#hasBodyParam}}{{#hasQueryParams}}{{#allParams}}{{^secondaryParam}}[{{/secondaryParam}}
                 {{#isQueryParam}}"{{paramName}}": {{paramName}}{{/isQueryParam}}{{#isBodyParam}}"=": {{paramName}}.encodeToJSON() as! [String:AnyObject]{{/isBodyParam}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
             ]{{/hasMore}}{{/allParams}}{{/hasQueryParams}}{{/hasBodyParam}}{{#hasBodyParam}}{{^hasQueryParams}}{{#allParams}}{{#isBodyParam}}{{paramName}}.encodeToJSON() as! [String:AnyObject]{{/isBodyParam}}{{/allParams}}{{/hasQueryParams}}{{/hasBodyParam}}{{^hasBodyParam}}{{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
