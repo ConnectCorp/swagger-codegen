@@ -311,14 +311,18 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
   @Override
   public CodegenOperation fromOperation(String path, String httpMethod, Operation operation, Map<String, Model> definitions, Swagger swagger) {
     path = normalizePath(path); // FIXME: a parameter should not be assigned. Also declare the methods parameters as 'final'.
-    List<Parameter> parameters = operation.getParameters();
-    parameters = Lists.newArrayList(Iterators.filter(parameters.iterator(), new Predicate<Parameter>() {
-      @Override
-      public boolean apply(@Nullable Parameter parameter) {
-        return !(parameter instanceof HeaderParameter);
-      }
-    }));
-    operation.setParameters(parameters);
+// TEMPORARY
+//
+// Prevent the removal of header parameters.
+//
+//    List<Parameter> parameters = operation.getParameters();
+//    parameters = Lists.newArrayList(Iterators.filter(parameters.iterator(), new Predicate<Parameter>() {
+//      @Override
+//      public boolean apply(@Nullable Parameter parameter) {
+//        return !(parameter instanceof HeaderParameter);
+//      }
+//    }));
+//    operation.setParameters(parameters);
     return super.fromOperation(path, httpMethod, operation, definitions, swagger);
   }
 
