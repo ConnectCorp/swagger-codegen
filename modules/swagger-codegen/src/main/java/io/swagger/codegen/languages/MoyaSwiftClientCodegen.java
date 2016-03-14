@@ -2,6 +2,7 @@ package io.swagger.codegen.languages;
 
 import io.swagger.codegen.CodegenOperation;
 import io.swagger.codegen.CodegenType;
+import io.swagger.codegen.DefaultCodegen;
 import io.swagger.codegen.SupportingFile;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
@@ -47,7 +48,8 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
         supportingFiles.remove(new SupportingFile("APIs.mustache", sourceFolder, "APIs.swift"));
 
         supportingFiles.add(new SupportingFile("Swift+URLEscapedString.mustache", sourceFolder, "String+URLEscapedString.swift"));
-        supportingFiles.add(new SupportingFile("ParameterEncoding+encodeURLParametersAndJSONBody.mustache", sourceFolder, "ParameterEncoding+encodeURLParametersAndJSONBody.swift"));
+        supportingFiles.add(new SupportingFile("ParameterEncoding+encode.mustache", sourceFolder, "ParameterEncoding+encode.swift"));
+        supportingFiles.add(new SupportingFile("Parameters.mustache", sourceFolder, "Parameters.swift"));
     }
 
     @Override
@@ -60,6 +62,7 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
         CodegenOperation op = super.fromOperation(path, httpMethod, operation, definitions, swagger);
 
         op.path = normalizePath(op.path);
+
 
         if (op.examples != null) {
             for (Map<String, String> example : op.examples) {

@@ -25,15 +25,23 @@ let {{classname}}Provider = RxMoyaProvider<{{classname}}>(endpointClosure: { (ta
     )
 
     var parameterEncoding: ParameterEncoding {
-        switch target {
-        {{#operation}}
-        case .{{operationId}}:
-            return .{{^hasQueryParams}}{{^hasPathParams}}{{^hasBodyParam}}URL{{/hasBodyParam}}{{/hasPathParams}}{{/hasQueryParams}}{{#hasBodyParam}}{{^hasPathParams}}{{^hasQueryParams}}JSON{{/hasQueryParams}}{{/hasPathParams}}{{/hasBodyParam}}{{#hasQueryParams}}{{^hasBodyParam}}{{^hasPathParams}}URL{{/hasPathParams}}{{/hasBodyParam}}{{#hasBodyParam}}Custom(ParameterEncoding.encodeURLParametersAndJSONBody){{/hasBodyParam}}{{/hasQueryParams}}{{#hasPathParams}}{{#hasBodyParam}}JSON{{/hasBodyParam}}{{^hasBodyParam}}URL{{/hasBodyParam}}{{/hasPathParams}}
-        {{/operation}}
+        return .Custom(ParameterEncoding.encode)
+    }
+
+    var headers: [String:String] {
+        get {
+            var data = [String:String]()
+
+            for (key, value) in (target.parameters![Parameters.Headers] as! [String:AnyObject]) {
+                data[key] = String(value)
+            }
+
+            return data
         }
     }
 
     return endpoint.endpointByAddingParameterEncoding(parameterEncoding)
+        .endpointByAddingHTTPHeaderFields(headers)
 })
 
 extension {{classname}}: TargetType {
@@ -43,7 +51,7 @@ extension {{classname}}: TargetType {
     var path: String {
         switch self {
         {{#operation}}
-        case .{{operationId}}{{#hasParams}}({{#allParams}}let {{#isPathParam}}{{paramName}}{{/isPathParam}}{{^isPathParam}}_{{/isPathParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
+        case .{{operationId}}{{#hasParams}}({{#allParams}}{{#isPathParam}}let {{paramName}}{{/isPathParam}}{{^isPathParam}}_{{/isPathParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
             return "{{path}}"
         {{/operation}}
         }
@@ -61,14 +69,18 @@ extension {{classname}}: TargetType {
     var parameters: [String:AnyObject]? {
         switch self {
         {{#operation}}
-        case .{{operationId}}{{#hasParams}}({{#allParams}}let {{#isPathParam}}_{{/isPathParam}}{{^isPathParam}}{{paramName}}{{/isPathParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
-            return {{#hasBodyParam}}{{#hasQueryParams}}{{#allParams}}{{^secondaryParam}}[{{/secondaryParam}}
-                {{#isQueryParam}}"{{paramName}}": {{paramName}}{{/isQueryParam}}{{#isBodyParam}}"=": {{paramName}}.encodeToJSON() as! [String:AnyObject]{{/isBodyParam}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
-            ]{{/hasMore}}{{/allParams}}{{/hasQueryParams}}{{/hasBodyParam}}{{#hasBodyParam}}{{^hasQueryParams}}{{#allParams}}{{#isBodyParam}}{{paramName}}.encodeToJSON() as! [String:AnyObject]{{/isBodyParam}}{{/allParams}}{{/hasQueryParams}}{{/hasBodyParam}}{{^hasBodyParam}}{{^queryParams}}{{^formParams}}[:]{{/formParams}}{{#formParams}}{{^secondaryParam}}[{{/secondaryParam}}
-                "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
-            ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
-                "{{paramName}}": {{paramName}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
-            ]{{/hasMore}}{{/queryParams}}{{/hasBodyParam}}
+        case .{{operationId}}{{#hasParams}}({{#allParams}}{{#isPathParam}}_{{/isPathParam}}{{^isPathParam}}let {{paramName}}{{/isPathParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
+            return [
+                Parameters.Headers: {{^hasHeaderParams}}[:]{{/hasHeaderParams}}{{#hasHeaderParams}}[
+                    {{#headerParams}}{{^secondaryParam}}{{/secondaryParam}}"{{paramName}}": {{paramName}}{{#hasMore}},
+                    {{/hasMore}}{{^hasMore}}
+                ]{{/hasMore}}{{/headerParams}}{{/hasHeaderParams}},
+                Parameters.Query: {{^hasQueryParams}}[:]{{/hasQueryParams}}{{#hasQueryParams}}[
+                    {{#queryParams}}{{^secondaryParam}}{{/secondaryParam}}"{{paramName}}": {{paramName}}{{#hasMore}},
+                    {{/hasMore}}{{^hasMore}}
+                ]{{/hasMore}}{{/queryParams}}{{/hasQueryParams}},
+                Parameters.Body: {{^hasBodyParam}}[:]{{/hasBodyParam}}{{#hasBodyParam}}{{#bodyParams}}{{paramName}}.encodeToJSON() as! [String:AnyObject]{{/bodyParams}}{{/hasBodyParam}}
+            ]
         {{/operation}}
         }
     }
