@@ -30,13 +30,13 @@ public class {{classname}}: JsonSerializable, CustomStringConvertible {
     }
 
     func toJson() -> AnyObject {
-        var dict = [String:AnyObject?](){{#vars}}{{#isNotContainer}}{{#isPrimitiveType}}{{^isEnum}}
+        {{^hasVars}}return [:]{{/hasVars}}{{#hasVars}}var dict = [String:AnyObject?](){{#vars}}{{#isNotContainer}}{{#isPrimitiveType}}{{^isEnum}}
         dict["{{name}}"] = self.{{name}}{{/isEnum}}{{/isPrimitiveType}}{{#isEnum}}
         dict["{{name}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.rawValue{{/isEnum}}{{^isPrimitiveType}}
         dict["{{name}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.toJson(){{/isPrimitiveType}}{{/isNotContainer}}{{#isContainer}}
         dict["{{name}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.toJson(){{/isContainer}}{{/vars}}
 
-        return Utils.removeNilValues(dict) ?? [:]
+        return Utils.removeNilValues(dict) ?? [:]{{/hasVars}}
     }
 
     static func fromJson(json: AnyObject) -> {{classname}} {
