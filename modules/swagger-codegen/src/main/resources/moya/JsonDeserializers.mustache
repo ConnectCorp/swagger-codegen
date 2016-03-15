@@ -112,13 +112,13 @@ class JsonDeserializers {
 
             // {{classname}}
             JsonDeserializers.addDeserializer(type: {{classname}}.self) { (source: AnyObject) -> {{classname}} in
-                let dict = source as! [NSObject:AnyObject]
+                {{^hasVars}}return {{classname}}(){{/hasVars}}{{#hasVars}}let dict = source as! [NSObject:AnyObject]
 
                 let data = {{classname}}(){{#vars}}{{#isEnum}}
                 data.{{name}} = {{classname}}.{{datatypeWithEnum}}(rawValue: (dict["{{name}}"] as? String) ?? ""){{#unwrapRequired}}{{#required}}!{{/required}}{{/unwrapRequired}} {{/isEnum}}{{^isEnum}}
                 data.{{name}} = JsonDeserializers.deserialize{{^unwrapRequired}}Optional{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}Optional{{/required}}{{/unwrapRequired}}(type: {{baseType}}.self, source: dict["{{name}}"]{{#unwrapRequired}}{{#required}}!{{/required}}{{/unwrapRequired}}){{/isEnum}}{{/vars}}
 
-                return data
+                return data{{/hasVars}}
             }
 
             // [{{classname}}]
