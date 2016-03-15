@@ -8,6 +8,8 @@ import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,13 +76,17 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
 
         op.path = normalizePath(op.path);
 
-
         if (op.examples != null) {
-            for (Map<String, String> example : op.examples) {
-                String exampleString = example.get("example");
+            List<Map<String, String>> examples = new ArrayList<Map<String, String>>();
 
-                example.put("example", normalizeExampleString(exampleString));
+            for (Map<String, String> example : op.examples) {
+                if (example.containsKey("contentType") && example.get("contentType").equals("application/json")) {
+                    example.put("example", normalizeExampleString(example.get("example")));
+                    examples.add(example);
+                }
             }
+
+            op.examples = examples;
         }
 
         return op;
