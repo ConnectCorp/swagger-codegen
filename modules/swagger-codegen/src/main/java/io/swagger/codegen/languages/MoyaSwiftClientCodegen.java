@@ -50,6 +50,8 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
         supportingFiles.remove(new SupportingFile("Models.mustache", sourceFolder, "Models.swift"));
         supportingFiles.remove(new SupportingFile("Extensions.mustache", sourceFolder, "Extensions.swift"));
         supportingFiles.remove(new SupportingFile("APIHelper.mustache", sourceFolder, "APIHelper.swift"));
+        supportingFiles.remove(new SupportingFile("Cartfile.mustache", "", "Cartfile"));
+        supportingFiles.remove(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
 
         sourceFolder = projectName;
 
