@@ -2,12 +2,12 @@ package io.swagger.codegen.languages;
 
 import io.swagger.codegen.CodegenOperation;
 import io.swagger.codegen.CodegenType;
-import io.swagger.codegen.DefaultCodegen;
 import io.swagger.codegen.SupportingFile;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 
+import java.io.File;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +38,7 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
         super();
 
         embeddedTemplateDir = templateDir = "moya";
+        outputFolder = "generated-code" + File.separator + "moya";
     }
 
     @Override
@@ -49,6 +50,8 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
         supportingFiles.remove(new SupportingFile("Models.mustache", sourceFolder, "Models.swift"));
         supportingFiles.remove(new SupportingFile("Extensions.mustache", sourceFolder, "Extensions.swift"));
         supportingFiles.remove(new SupportingFile("APIHelper.mustache", sourceFolder, "APIHelper.swift"));
+
+        sourceFolder = projectName;
 
         supportingFiles.add(new SupportingFile("Swift+URLEscapedString.mustache", sourceFolder, "String+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("ParameterEncoding+encode.mustache", sourceFolder, "ParameterEncoding+encode.swift"));
