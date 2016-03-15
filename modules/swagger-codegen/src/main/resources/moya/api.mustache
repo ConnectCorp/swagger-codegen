@@ -51,7 +51,7 @@ extension {{classname}}: TargetType {
     var path: String {
         switch self {
         {{#operation}}
-        case .{{operationId}}{{#hasParams}}({{#allParams}}{{#isPathParam}}let {{paramName}}{{/isPathParam}}{{^isPathParam}}_{{/isPathParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}:
+        case .{{operationId}}{{#hasPathParams}}({{#allParams}}{{#isPathParam}}let {{paramName}}{{/isPathParam}}{{^isPathParam}}_{{/isPathParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasPathParams}}:
             return "{{path}}"
         {{/operation}}
         }
