@@ -48,12 +48,14 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
         supportingFiles.remove(new SupportingFile("APIs.mustache", sourceFolder, "APIs.swift"));
         supportingFiles.remove(new SupportingFile("Models.mustache", sourceFolder, "Models.swift"));
         supportingFiles.remove(new SupportingFile("Extensions.mustache", sourceFolder, "Extensions.swift"));
+        supportingFiles.remove(new SupportingFile("APIHelper.mustache", sourceFolder, "APIHelper.swift"));
 
         supportingFiles.add(new SupportingFile("Swift+URLEscapedString.mustache", sourceFolder, "String+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("ParameterEncoding+encode.mustache", sourceFolder, "ParameterEncoding+encode.swift"));
         supportingFiles.add(new SupportingFile("Parameters.mustache", sourceFolder, "Parameters.swift"));
         supportingFiles.add(new SupportingFile("JsonSerializable.mustache", sourceFolder, "JsonSerializable.swift"));
         supportingFiles.add(new SupportingFile("JsonDeserializers.mustache", sourceFolder, "JsonDeserializers.swift"));
+        supportingFiles.add(new SupportingFile("Utils.mustache", sourceFolder, "Utils.swift"));
     }
 
     @Override

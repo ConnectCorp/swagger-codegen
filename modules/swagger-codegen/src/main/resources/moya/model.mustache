@@ -36,7 +36,7 @@ public class {{classname}}: JsonSerializable, CustomStringConvertible {
         dict["{{name}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.toJson(){{/isPrimitiveType}}{{/isNotContainer}}{{#isContainer}}
         dict["{{name}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.toJson(){{/isContainer}}{{/vars}}
 
-        return APIHelper.rejectNil(dict) ?? [:]
+        return Utils.removeNilValues(dict) ?? [:]
     }
 
     static func fromJson(json: AnyObject) -> {{classname}} {
