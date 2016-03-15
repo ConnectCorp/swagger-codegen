@@ -84,6 +84,7 @@ extension {{classname}}: TargetType {
                     {{#formParams}}{{^secondaryParam}}{{/secondaryParam}}"{{paramName}}": {{paramName}}{{#hasMore}},
                     {{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/formParams}}{{/hasFormParams}}
+            ]
         {{/operation}}
         }
     }

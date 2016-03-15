@@ -3,9 +3,21 @@ import Alamofire
 extension ParameterEncoding {
 
     static func encode(URLRequest: URLRequestConvertible, parameters: [String:AnyObject]?) -> (NSMutableURLRequest, NSError?) {
-        let (queryParameters, body) = (parameters![Parameters.Query] as! [String:AnyObject], parameters![Parameters.Body] as! [String:AnyObject])
+        let (queryParameters, body, formParameters) = (parameters![Parameters.Query] as! [String:AnyObject], parameters![Parameters.Body] as! [String:AnyObject], parameters![Parameters.Form] as! [String:AnyObject])
 
-        var (mutableURLRequest, encodingError) = ParameterEncoding.URL.encode(URLRequest, parameters: queryParameters)
+        var encodeInURL: Bool {
+            get {
+                switch URLRequest.URLRequest.HTTPMethod {
+                case "GET", "HEAD", "DELETE":
+                    return true
+
+                default:
+                    return false
+                }
+            }
+        }
+
+        var (mutableURLRequest, encodingError) = ParameterEncoding.URL.encode(URLRequest, parameters: encodeInURL ? queryParameters : formParameters)
 
         if body.count > 0 {
             do {
