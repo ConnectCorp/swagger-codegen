@@ -21,10 +21,10 @@ public class {{classname}}: JsonSerializable, CustomStringConvertible {
     {{/description}}public var {{name}}: {{{datatype}}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{#required}}!{{/required}}{{/unwrapRequired}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}
     {{/vars}}
     public var description: String {
-        return "{{classname}}({{#vars}}{{name}}: \({{name}}){{#hasMore}}, {{/hasMore}}{{^hasMore}}){{/hasMore}}{{/vars}}"
+        return "{{classname}}({{#vars}}\n    {{name}}: \({{name}}){{#hasMore}},{{/hasMore}}{{^hasMore}}\n{{/hasMore}}{{/vars}})"
     }
 
-    init({{#vars}}{{name}}: {{datatype}}? = {{#defaultValue}}{{defaultValue}}{{/defaultValue}}{{^defaultValue}}nil{{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{^hasMore}}){{/hasMore}}{{/vars}} {
+    init({{#vars}}{{name}}: {{datatype}}? = {{#defaultValue}}{{defaultValue}}{{/defaultValue}}{{^defaultValue}}nil{{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/vars}}) {
         {{#vars}}self.{{name}} = {{name}}{{#hasMore}}
         {{/hasMore}}{{/vars}}
     }
@@ -41,6 +41,10 @@ public class {{classname}}: JsonSerializable, CustomStringConvertible {
 
     static func fromJson(json: AnyObject) -> {{classname}} {
         return JsonDeserializers.deserialize(type: {{classname}}.self, source: json)
+    }
+
+    static func fromJsonArray(jsonArray: AnyObject) -> [{{classname}}] {
+        return JsonDeserializers.deserialize(type: [{{classname}}].self, source: jsonArray)
     }
 }{{/model}}
 {{/models}}
