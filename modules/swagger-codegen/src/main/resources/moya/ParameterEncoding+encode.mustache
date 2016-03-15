@@ -11,7 +11,9 @@ extension ParameterEncoding {
             do {
                 let data = try NSJSONSerialization.dataWithJSONObject(body, options: NSJSONWritingOptions())
 
-                if mutableURLRequest.valueForHTTPHeaderField("Content-Type") == nil {
+                let contentType = mutableURLRequest.valueForHTTPHeaderField("Content-Type")
+
+                if contentType == nil || contentType != "application/json" {
                     mutableURLRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
                 }
 
