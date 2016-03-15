@@ -79,7 +79,7 @@ extension {{classname}}: TargetType {
                     {{#queryParams}}{{^secondaryParam}}{{/secondaryParam}}"{{paramName}}": {{paramName}}{{#hasMore}},
                     {{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/queryParams}}{{/hasQueryParams}},
-                Parameters.Body: {{^hasBodyParam}}[:]{{/hasBodyParam}}{{#hasBodyParam}}{{#bodyParams}}{{paramName}}.encodeToJSON(){{/bodyParams}}{{/hasBodyParam}},
+                Parameters.Body: {{^hasBodyParam}}[:]{{/hasBodyParam}}{{#hasBodyParam}}{{#bodyParams}}{{paramName}}.toJson(){{/bodyParams}}{{/hasBodyParam}},
                 Parameters.Form: {{^hasFormParams}}[:]{{/hasFormParams}}{{#hasFormParams}}[
                     {{#formParams}}{{^secondaryParam}}{{/secondaryParam}}"{{paramName}}": {{paramName}}{{#hasMore}},
                     {{/hasMore}}{{^hasMore}}
