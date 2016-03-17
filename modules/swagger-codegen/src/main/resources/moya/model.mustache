@@ -24,12 +24,12 @@ public class {{classname}}: JsonSerializable, CustomStringConvertible {
         return "{{classname}}({{#vars}}\n    {{name}}: \({{name}}){{#hasMore}},{{/hasMore}}{{^hasMore}}\n{{/hasMore}}{{/vars}})"
     }
 
-    init({{#vars}}{{name}}: {{datatype}}? = {{#defaultValue}}{{defaultValue}}{{/defaultValue}}{{^defaultValue}}nil{{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/vars}}) {
+    public init({{#vars}}{{name}}: {{datatype}}? = {{#defaultValue}}{{defaultValue}}{{/defaultValue}}{{^defaultValue}}nil{{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/vars}}) {
         {{#vars}}self.{{name}} = {{name}}{{#hasMore}}
         {{/hasMore}}{{/vars}}
     }
 
-    func toJson() -> AnyObject {
+    public func toJson() -> AnyObject {
         {{^hasVars}}return [:]{{/hasVars}}{{#hasVars}}var dict = [String:AnyObject?](){{#vars}}{{#isNotContainer}}{{#isPrimitiveType}}{{^isEnum}}
         dict["{{name}}"] = self.{{name}}{{/isEnum}}{{/isPrimitiveType}}{{#isEnum}}
         dict["{{name}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.rawValue{{/isEnum}}{{^isPrimitiveType}}
@@ -39,11 +39,11 @@ public class {{classname}}: JsonSerializable, CustomStringConvertible {
         return Utils.removeNilValues(dict) ?? [:]{{/hasVars}}
     }
 
-    static func fromJson(json: AnyObject) -> {{classname}} {
+    public static func fromJson(json: AnyObject) -> {{classname}} {
         return JsonDeserializers.deserialize(type: {{classname}}.self, source: json)
     }
 
-    static func fromJsonArray(jsonArray: AnyObject) -> [{{classname}}] {
+    public static func fromJsonArray(jsonArray: AnyObject) -> [{{classname}}] {
         return JsonDeserializers.deserialize(type: [{{classname}}].self, source: jsonArray)
     }
 }{{/model}}

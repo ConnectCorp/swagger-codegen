@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
     s.description = '{{podDescription}}'{{/podDescription}}{{#podScreenshots}}
     s.screenshots = {{& podScreenshots}}{{/podScreenshots}}{{#podDocumentationURL}}
     s.documentation_url = '{{podDocumentationURL}}'{{/podDocumentationURL}}
-    s.source_files = '{{projectName}}/**/*.swift'{{#usePromiseKit}}
-    s.dependency 'PromiseKit', '~> 3.0.0'{{/usePromiseKit}}
-    s.dependency 'Alamofire', '~> 3.1.4'
+    s.source_files = '{{projectName}}/**/*.swift'
+    s.dependency 'Moya'
+    s.dependency 'Moya/RxSwift'
 end

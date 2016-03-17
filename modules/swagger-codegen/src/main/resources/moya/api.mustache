@@ -13,7 +13,7 @@ enum {{classname}} {
     {{/operation}}
 }
 
-let {{classname}}Provider = RxMoyaProvider<{{classname}}>(endpointClosure: { (target: {{classname}}) -> Endpoint<{{classname}}> in
+let {{classname}}EndpointClosure = { (target: {{classname}}) -> Endpoint<{{classname}}> in
     let endpoint = Endpoint<{{classname}}>(
         URL: target.baseURL.URLByAppendingPathComponent(target.path).absoluteString,
 
@@ -42,7 +42,7 @@ let {{classname}}Provider = RxMoyaProvider<{{classname}}>(endpointClosure: { (ta
 
     return endpoint.endpointByAddingParameterEncoding(parameterEncoding)
         .endpointByAddingHTTPHeaderFields(headers)
-})
+}
 
 extension {{classname}}: TargetType {
 
