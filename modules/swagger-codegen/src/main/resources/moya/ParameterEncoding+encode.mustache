@@ -2,7 +2,7 @@ import Alamofire
 
 extension ParameterEncoding {
 
-    static func encode(URLRequest: URLRequestConvertible, parameters: [String:AnyObject]?) -> (NSMutableURLRequest, NSError?) {
+    public static func encode(URLRequest: URLRequestConvertible, parameters: [String:AnyObject]?) -> (NSMutableURLRequest, NSError?) {
         let (queryParameters, body, formParameters) = (parameters![Parameters.Query] as! [String:AnyObject], parameters![Parameters.Body] as! [String:AnyObject], parameters![Parameters.Form] as! [String:AnyObject])
 
         var encodeInURL: Bool {

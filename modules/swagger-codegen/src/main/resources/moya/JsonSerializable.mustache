@@ -11,43 +11,43 @@ protocol JsonSerializable {
 }
 
 extension Bool: JsonSerializable {
-    func toJson() -> AnyObject {
+    public func toJson() -> AnyObject {
         return self
     }
 }
 
 extension Float: JsonSerializable {
-    func toJson() -> AnyObject {
+    public func toJson() -> AnyObject {
         return self
     }
 }
 
 extension Int: JsonSerializable {
-    func toJson() -> AnyObject {
+    public func toJson() -> AnyObject {
         return self
     }
 }
 
 extension Double: JsonSerializable {
-    func toJson() -> AnyObject {
+    public func toJson() -> AnyObject {
         return self
     }
 }
 
 extension String: JsonSerializable {
-    func toJson() -> AnyObject {
+    public func toJson() -> AnyObject {
         return self
     }
 }
 
 extension Array: JsonSerializable {
-    func toJson() -> AnyObject {
+    public func toJson() -> AnyObject {
         return self.map(jsonify)
     }
 }
 
 extension Dictionary: JsonSerializable {
-    func toJson() -> AnyObject {
+    public func toJson() -> AnyObject {
         var dict = [NSObject:AnyObject]()
 
         for (key, value) in self {
@@ -59,7 +59,7 @@ extension Dictionary: JsonSerializable {
 }
 
 extension NSDate: JsonSerializable {
-    func toJson() -> AnyObject {
+    public func toJson() -> AnyObject {
         let formatter = NSDateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
 
