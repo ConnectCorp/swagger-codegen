@@ -10,64 +10,7 @@ import Moya
 public enum {{classname}} {
 {{#operation}}
     case {{operationId}}{{#hasParams}}({{#allParams}}{{paramName}}: {{dataType}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{/hasParams}}
-
 {{/operation}}
-}
-
-public class {{classname}}ProviderBuilder {
-
-    public typealias EndpointTransformer = Endpoint<{{classname}}> -> Endpoint<{{classname}}>
-
-    public typealias EndpointClosure = {{classname}} -> Endpoint<{{classname}}>
-
-    public typealias RequestClosure = (Endpoint<{{classname}}>, NSURLRequest -> Void) -> Void
-
-    public typealias StubClosure = {{classname}} -> Moya.StubBehavior
-
-    public static func build(endpointTransformer: EndpointTransformer? = nil,
-        requestClosure: RequestClosure = MoyaProvider.DefaultRequestMapping,
-        stubClosure: StubClosure = MoyaProvider.NeverStub,
-        manager: Manager = MoyaProvider<{{classname}}>.DefaultAlamofireManager(),
-        plugins: [PluginType] = []) -> RxMoyaProvider<{{classname}}> {
-
-        var endpointClosure: EndpointClosure = { target in
-            let endpoint = Endpoint<{{classname}}>(
-                URL: target.baseURL.URLByAppendingPathComponent(target.path).absoluteString,
-                sampleResponseClosure: { .NetworkResponse(200, target.sampleData) },
-                method: target.method,
-                parameters: target.parameters
-            )
-
-            var parameterEncoding: ParameterEncoding {
-                return .Custom(ParameterEncoding.encode)
-            }
-
-            var headers: [String:String] {
-                get {
-                    var data = [String:String]()
-
-                    for (key, value) in (target.parameters![Parameters.Headers] as! [String:AnyObject]) {
-                        data[key] = String(value)
-                    }
-
-                    return data
-                }
-            }
-
-            return endpoint.endpointByAddingParameterEncoding(parameterEncoding)
-                .endpointByAddingHTTPHeaderFields(headers)
-        }
-
-        if let transformer = endpointTransformer {
-            endpointClosure = { transformer(endpointClosure($0)) }
-        }
-
-        return RxMoyaProvider<{{classname}}>(endpointClosure: endpointClosure,
-            requestClosure: requestClosure,
-            stubClosure: stubClosure,
-            manager: manager,
-            plugins: plugins)
-    }
 }
 
 extension {{classname}}: TargetType {

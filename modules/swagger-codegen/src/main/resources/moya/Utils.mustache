@@ -4,8 +4,8 @@
 // https://github.com/ConnectCorp/swagger-codegen
 //
 
-class Utils {
-    static func removeNilValues(source: [String:AnyObject?]) -> [String:AnyObject]? {
+public class Utils {
+    public static func removeNilValues(source: [String:AnyObject?]) -> [String:AnyObject]? {
         var destination = [String:AnyObject]()
         for (key, nillableValue) in source {
             if let value: AnyObject = nillableValue {

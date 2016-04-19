@@ -10,7 +10,7 @@ import Foundation
 {{#description}}
 
 /** {{description}} */{{/description}}
-public class {{classname}}: JsonSerializable, CustomStringConvertible {
+public class {{classname}}:{{#modelSuperClass}} {{modelSuperClass}},{{/modelSuperClass}} JsonSerializable, CustomStringConvertible {
 {{#vars}}{{#isEnum}}
     public enum {{datatypeWithEnum}}: String { {{#allowableValues}}{{#values}}
         case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}

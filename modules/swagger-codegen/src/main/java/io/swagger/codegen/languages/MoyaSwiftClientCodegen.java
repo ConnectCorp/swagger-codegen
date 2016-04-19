@@ -1,5 +1,6 @@
 package io.swagger.codegen.languages;
 
+import io.swagger.codegen.CliOption;
 import io.swagger.codegen.CodegenOperation;
 import io.swagger.codegen.CodegenType;
 import io.swagger.codegen.SupportingFile;
@@ -21,6 +22,10 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
 
     private static final Pattern PATH_PARAM_PATTERN = Pattern.compile("\\{[a-zA-Z_]+\\}");
 
+    private static final String MODEL_SUPERCLASS = "modelSuperClass";
+
+    private static final String MODEL_SUPERCLASS_DESCRIPTION = "Super class of generated model classes";
+
     @Override
     public CodegenType getTag() {
         return CodegenType.CLIENT;
@@ -41,6 +46,10 @@ public class MoyaSwiftClientCodegen extends SwiftCodegen {
 
         embeddedTemplateDir = templateDir = "moya";
         outputFolder = "generated-code" + File.separator + "moya";
+
+        cliOptions.add(new CliOption(MODEL_SUPERCLASS, MODEL_SUPERCLASS_DESCRIPTION));
+
+        System.out.println(cliOptions);
     }
 
     @Override
