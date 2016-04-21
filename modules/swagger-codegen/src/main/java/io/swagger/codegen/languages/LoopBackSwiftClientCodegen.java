@@ -180,6 +180,11 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     }
 
     @Override
+    public String toDefaultValue(Property property) {
+        return "nil";
+    }
+
+    @Override
     public String toInstantiationType(Property property) {
         if (property instanceof ArrayProperty) {
             ArrayProperty array = (ArrayProperty) property;
