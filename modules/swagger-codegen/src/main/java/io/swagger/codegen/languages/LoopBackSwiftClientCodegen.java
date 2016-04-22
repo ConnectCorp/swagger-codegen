@@ -155,7 +155,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     public Map<String, Object> postProcessOperations(Map<String, Object> objects) {
         HashMap<String, Object> api  = (HashMap<String, Object>) objects.get("operations");
 
-        List<CodegenOperation> operations = postProcessOperations((ArrayList<CodegenOperation>) api.get("operation"), "/" + api.get("pathPrefix"));
+        List<CodegenOperation> operations = postProcessOperations(api, (ArrayList<CodegenOperation>) api.get("operation"));
 
         api.put("operation", operations);
 
@@ -254,7 +254,13 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         return operation;
     }
 
-    private List<CodegenOperation> postProcessOperations(List<CodegenOperation> operations, String resourcePath) {
+    private List<CodegenOperation> postProcessOperations(HashMap<String, Object> api, List<CodegenOperation> operations) {
+        if (operations.size() == 0) {
+            return operations;
+        }
+
+        String resourcePath = "/" + operations.get(0).path.split("/")[1];
+
         List<CodegenOperation> postProcessed = new ArrayList<CodegenOperation>();
 
         for (CodegenOperation operation: operations) {
@@ -269,11 +275,13 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             }
         }
 
+        api.put("resourcePath", resourcePath);
+
         return postProcessed;
     }
 
     private boolean shouldSkipOperation(CodegenOperation operation, String resourcePath) {
-        if (operation.path.equals(resourcePath) && (operation.httpMethod.equals("POST") || operation.httpMethod.equals("PUT"))) {
+        if (operation.path.equals(resourcePath) && (operation.httpMethod.equals("GET") || operation.httpMethod.equals("POST") || operation.httpMethod.equals("PUT"))) {
             return true;
         }
 
@@ -296,7 +304,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         }
 
         for (CodegenResponse response: responses) {
-            if (response.code.startsWith("2")) {
+            if (response.code.startsWith("2") && response.dataType != null) {
                 return response;
             }
         }
