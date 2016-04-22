@@ -152,6 +152,17 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     }
 
     @Override
+    public Map<String, Object> postProcessOperations(Map<String, Object> objects) {
+        HashMap<String, Object> api  = (HashMap<String, Object>) objects.get("operations");
+
+        List<CodegenOperation> operations = postProcessOperations((ArrayList<CodegenOperation>) api.get("operation"), "/" + api.get("pathPrefix"));
+
+        api.put("operation", operations);
+
+        return objects;
+    }
+
+    @Override
     public String getTypeDeclaration(Property property) {
         if (property instanceof ArrayProperty) {
             ArrayProperty array = (ArrayProperty) property;
@@ -241,6 +252,59 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         handleOperationExamples(operation);
 
         return operation;
+    }
+
+    private List<CodegenOperation> postProcessOperations(List<CodegenOperation> operations, String resourcePath) {
+        List<CodegenOperation> postProcessed = new ArrayList<CodegenOperation>();
+
+        for (CodegenOperation operation: operations) {
+            if (!shouldSkipOperation(operation, resourcePath)) {
+                postProcessed.add(operation);
+            }
+
+            operation.successfulResponse = findSuccessfulResponse(operation.responses);
+
+            if (operation.successfulResponse.containerType != null && operation.successfulResponse.containerType.equals("array")) {
+                operation.successfulResponse.isListContainer = true;
+            }
+        }
+
+        return postProcessed;
+    }
+
+    private boolean shouldSkipOperation(CodegenOperation operation, String resourcePath) {
+        if (operation.path.equals(resourcePath) && (operation.httpMethod.equals("POST") || operation.httpMethod.equals("PUT"))) {
+            return true;
+        }
+
+        String path = operation.path.split(resourcePath)[1].substring(1);
+
+        if (path.equals("count") || path.equals("find") || path.equals("findAll") || path.equals("delete") || path.equals("deleteAll")) {
+            return true;
+        }
+
+        operation.path = path;
+
+        return false;
+    }
+
+    private CodegenResponse findSuccessfulResponse(List<CodegenResponse> responses) {
+        if (responses.size() == 1 && responses.get(0).isWildcard()) {
+            responses.get(0).dataType = "String";
+
+            return responses.get(0);
+        }
+
+        for (CodegenResponse response: responses) {
+            if (response.code.startsWith("2")) {
+                return response;
+            }
+        }
+
+        CodegenResponse stringResponse = new CodegenResponse();
+        stringResponse.dataType = "String";
+
+        return stringResponse;
     }
 
     private void handleOperationExamples(CodegenOperation operation) {

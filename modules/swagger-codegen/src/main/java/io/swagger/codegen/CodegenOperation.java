@@ -27,6 +27,7 @@ public class CodegenOperation {
     public List<CodegenSecurity> authMethods;
     public List<String> tags;
     public List<CodegenResponse> responses = new ArrayList<CodegenResponse>();
+    public CodegenResponse successfulResponse;
     public Set<String> imports = new HashSet<String>();
     public List<Map<String, String>> examples;
     public ExternalDocs externalDocs;
@@ -85,6 +86,15 @@ public class CodegenOperation {
      */
     public boolean getHasFormParams() {
         return nonempty(formParams);
+    }
+
+    /**
+     * Check if there's at least one query parameter, one header parameter or one header parameter
+     *
+     * @return true if any HTTP parameter exists, false otherwise
+     */
+    public boolean getHasHTTPParams() {
+        return getHasQueryParams() || getHasHeaderParams() || getHasFormParams();
     }
 
 }
