@@ -2,8 +2,12 @@ import LoopBackSwift
 
 {{#operations}}public class {{classname}}: LoopBackAPI<{{baseName}}> {
 
-    public required init(requestor: Requestable) {
-        super.init(requestor: requestor, baseURL: { return NSURL("{{basePath}}")! })
+    public convenience init(requestor: Requestable) {
+        self.init(requestor: requestor, baseURL: { return NSURL("{{basePath}}")! })
+    }
+
+    public override init(requestor: Requestable, baseURL: BaseURLClosure) {
+        super.init(requestor: requestor, baseURL: baseURL)
     }
 
     public override var resourcePath: String? {

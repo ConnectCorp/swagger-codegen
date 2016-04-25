@@ -26,6 +26,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private String sourceFolder = projectName;
 
+    private static int anonymousApisCount = 0;
+
     @Override
     public CodegenType getTag() {
         return CodegenType.CLIENT;
@@ -225,8 +227,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     @Override
     public String toApiName(String name) {
-        if (name.length() == 0) {
-            return "DefaultAPI";
+        if (name.isEmpty()) {
+            return "AnonymousAPI" + (++anonymousApisCount);
         }
 
         return initialCaps(name) + "API";
