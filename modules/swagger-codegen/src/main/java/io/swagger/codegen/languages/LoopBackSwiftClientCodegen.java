@@ -227,7 +227,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     @Override
     public String toApiName(String name) {
-        if (name.isEmpty()) {
+        if (name.length() == 0) {
             return "AnonymousAPI" + (++anonymousApisCount);
         }
 
@@ -287,7 +287,13 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             return true;
         }
 
-        String path = operation.path.split(resourcePath)[1].substring(1);
+        String[] pathParts = operation.path.split(resourcePath);
+
+        if (pathParts.length <= 1) {
+            return false;
+        }
+
+        String path = pathParts[1].substring(1);
 
         if (path.equals("count") || path.equals("find") || path.equals("findAll") || path.equals("delete") || path.equals("deleteAll")) {
             return true;

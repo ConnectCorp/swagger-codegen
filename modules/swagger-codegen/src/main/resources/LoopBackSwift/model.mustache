@@ -1,5 +1,6 @@
 {{#models}}{{#model}}import ObjectMapper
 import Realm
+import RealmSwift
 
 public class {{classname}}: Object, Mappable, CustomStringConvertible {
 {{#vars}}{{#isEnum}}
@@ -10,12 +11,24 @@ public class {{classname}}: Object, Mappable, CustomStringConvertible {
 {{#vars}}{{#isEnum}}    public dynamic var {{name}}: {{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    public dynamic var {{name}}: {{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}
 {{/vars}}
 
-    public var description: String {
+    public override var description: String {
         return "{{classname}}({{#vars}}\n    {{name}}: \({{name}}){{#hasMore}},{{/hasMore}}{{^hasMore}}\n{{/hasMore}}{{/vars}})"
+    }
+
+    public required init(value: AnyObject, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
     }
 
     public required convenience init?(_ map: Map) {
         self.init()
+    }
+
+    public required init() {
+        super.init()
     }
 
     public func mapping(map: Map) {
