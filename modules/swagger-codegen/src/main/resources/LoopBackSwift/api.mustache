@@ -1,41 +1,47 @@
 import LoopBackSwift
 
-{{#operations}}public class {{classname}}: LoopBackAPI<{{baseName}}> {
+{{#operations}}public class {{classname}}: LoopBackAPI {
 
-    public convenience init(requestor: Requestable) {
+    lazy let authsProvider = {{projectName}}AuthMethodsProvider()
+
+    public convenience init(requestor:Requestable) {
         self.init(requestor: requestor, baseURL: { return NSURL("{{basePath}}")! })
     }
 
-    public override init(requestor: Requestable, baseURL: BaseURLClosure) {
+    public override init(requestor:Requestable, baseURL:BaseURLClosure) {
         super.init(requestor: requestor, baseURL: baseURL)
     }
 
-    public override var resourcePath: String? {
+    public override var resourcePath:String? {
         return "{{resourcePath}}"
     }
 
+    public override var authMethodsProvider:AuthMethodsProvider? {
+        return authsProvider
+    }
+
 {{#operation}}
-    public func {{operationId}}({{#hasParams}}{{#allParams}}{{paramName}}: {{dataType}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/hasParams}}) -> Observable<{{#successfulResponse}}{{dataType}}{{/successfulResponse}}> {
-        return try request(
-            .{{httpMethod}},
-            path: "{{path}}"{{#hasHTTPParams}},
+    public func {{operationId}}({{#hasParams}}{{#allParams}}{{paramName}}:{{dataType}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/hasParams}}) -> Observable<{{#successfulResponse}}{{dataType}}{{/successfulResponse}}> {
+        return try request{{#successfulResponse}}{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Array{{/isListContainer}}{{/successfulResponse}}(
+            .{{httpMethod}}{{#hasPath}},
+            path: "{{path}}"{{/hasPath}}{{#hasHTTPParams}},
             parameters: HTTP.Parameters(
                 {{#hasQueryParams}}query: [
-    {{#queryParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{paramName}}": {{paramName}}{{#hasMore}},
+    {{#queryParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{paramName}}" : {{paramName}}{{#hasMore}},
     {{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/queryParams}}{{/hasQueryParams}}{{#hasFormParams}}{{#hasQueryParams}},
             {{/hasQueryParams}}form: [
-    {{#formParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{paramName}}": {{paramName}}{{#hasMore}},
+    {{#formParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{paramName}}" : {{paramName}}{{#hasMore}},
     {{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/formParams}}{{/hasFormParams}}{{#hasHeaderParams}}{{#hasFormParams}}{{^hasQueryParams}},
             {{/hasQueryParams}}{{#hasQueryParams}},
             {{/hasQueryParams}}{{/hasFormParams}}headers: [
-    {{#headerParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{paramName}}": {{paramName}}{{#hasMore}},
+    {{#headerParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{paramName}}" : {{paramName}}{{#hasMore}},
     {{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/headerParams}}{{/hasHeaderParams}}
-            ){{/hasHTTPParams}}{{#successfulResponse}}{{#isListContainer}},
-            collectionType: true{{/isListContainer}}{{/successfulResponse}}{{#hasBodyParam}},
-            {{#bodyParam}}body: { return {{paramName}}.toJSONData() }{{/bodyParam}}{{/hasBodyParam}}
+            ){{/hasHTTPParams}}{{#hasAuthMethods}},
+            authMethods: [{{#authMethods}}"{{name}}"{{#hasMore}}, {{/hasMore}}{{/authMethods}}]{{/hasAuthMethods}}{{#hasBodyParam}},
+            {{#bodyParam}}body: { return {{paramName}}.toJSON() }{{/bodyParam}}{{/hasBodyParam}}
         )
     }{{#hasMore}}
     {{/hasMore}}

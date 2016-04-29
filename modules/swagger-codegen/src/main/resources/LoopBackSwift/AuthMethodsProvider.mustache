@@ -1,0 +1,11 @@
+import LoopBackSwift
+
+public class {{projectName}}AuthMethodsProvider: AuthMethodsProvider {
+
+    public var authMethods:[String : AuthMethod] {
+        return {{^hasAuthMethods}}[:]{{/hasAuthMethods}}{{#hasAuthMethods}}[
+            {{#authMethods}}"{{name}}" : {{#isApiKey}}APIKey(name: "{{keyParamName}}", type: {{#isKeyInHeader}}.Header{{/isKeyInHeader}}{{#isKeyInQuery}}.Query{{/isKeyInQuery}}){{/isApiKey}}{{#hasMore}},
+            {{/hasMore}}{{/authMethods}}{{/hasAuthMethods}}
+        ]
+    }
+}

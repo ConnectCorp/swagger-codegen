@@ -96,5 +96,4 @@ public class CodegenOperation {
     public boolean getHasHTTPParams() {
         return getHasQueryParams() || getHasHeaderParams() || getHasFormParams();
     }
-
 }

@@ -16,9 +16,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LoopBackSwiftClientCodegen extends DefaultCodegen implements CodegenConfig {
-    private final static String NAME = "LoopBackSwift";
+    private static final String PROJECT_NAME = "projectName";
 
-    private final static String HELP = "Generates a client library for the LoopBackSwift framework.";
+    private static final String NAME = "LoopBackSwift";
+
+    private static final String HELP = "Generates a client library for the LoopBackSwift framework.";
 
     private static final Pattern PATH_PARAM_PATTERN = Pattern.compile("\\{[a-zA-Z_]+\\}");
 
@@ -136,11 +138,17 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     @Override
     public void processOpts() {
         super.processOpts();
+
+        if (!additionalProperties.containsKey(PROJECT_NAME)) {
+            additionalProperties.put(PROJECT_NAME, projectName);
+        }
+
+        supportingFiles.add(new SupportingFile("AuthMethodsProvider.mustache", sourceFolder + File.separator + "Auth", projectName + "AuthMethodsProvider.swift"));
     }
 
     @Override
     public String escapeReservedWord(String name) {
-        return "`" + name + "`";
+        return "_" + name;
     }
 
     @Override
@@ -157,9 +165,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     public Map<String, Object> postProcessOperations(Map<String, Object> objects) {
         HashMap<String, Object> api  = (HashMap<String, Object>) objects.get("operations");
 
-        List<CodegenOperation> operations = postProcessOperations(api, (ArrayList<CodegenOperation>) api.get("operation"));
-
-        api.put("operation", operations);
+        postProcessOperations(api, (ArrayList<CodegenOperation>) api.get("operation"));
 
         return objects;
     }
@@ -256,9 +262,9 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         return operation;
     }
 
-    private List<CodegenOperation> postProcessOperations(HashMap<String, Object> api, List<CodegenOperation> operations) {
+    private void postProcessOperations(HashMap<String, Object> api, List<CodegenOperation> operations) {
         if (operations.size() == 0) {
-            return operations;
+            return;
         }
 
         String resourcePath = "/" + operations.get(0).path.split("/")[1];
@@ -266,8 +272,15 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         List<CodegenOperation> postProcessed = new ArrayList<CodegenOperation>();
 
         for (CodegenOperation operation: operations) {
-            if (!shouldSkipOperation(operation, resourcePath)) {
-                postProcessed.add(operation);
+            if (operation.path.equals(resourcePath)) {
+                operation.path = null;
+
+            } else {
+                String[] pathParts = operation.path.split(resourcePath);
+
+                if (pathParts.length > 1) {
+                    operation.path = pathParts[1].substring(1);
+                }
             }
 
             operation.successfulResponse = findSuccessfulResponse(operation.responses);
@@ -278,30 +291,6 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         }
 
         api.put("resourcePath", resourcePath);
-
-        return postProcessed;
-    }
-
-    private boolean shouldSkipOperation(CodegenOperation operation, String resourcePath) {
-        if (operation.path.equals(resourcePath) && (operation.httpMethod.equals("GET") || operation.httpMethod.equals("POST") || operation.httpMethod.equals("PUT"))) {
-            return true;
-        }
-
-        String[] pathParts = operation.path.split(resourcePath);
-
-        if (pathParts.length <= 1) {
-            return false;
-        }
-
-        String path = pathParts[1].substring(1);
-
-        if (path.equals("count") || path.equals("find") || path.equals("findAll") || path.equals("delete") || path.equals("deleteAll")) {
-            return true;
-        }
-
-        operation.path = path;
-
-        return false;
     }
 
     private CodegenResponse findSuccessfulResponse(List<CodegenResponse> responses) {
