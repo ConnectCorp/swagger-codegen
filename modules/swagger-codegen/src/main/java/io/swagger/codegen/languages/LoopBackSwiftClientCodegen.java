@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 public class LoopBackSwiftClientCodegen extends DefaultCodegen implements CodegenConfig {
     private static final String PROJECT_NAME = "projectName";
 
+    private static final String USE_REALM = "useRealm";
+
     private static final String NAME = "LoopBackSwift";
 
     private static final String HELP = "Generates a client library for the LoopBackSwift framework.";
@@ -143,7 +145,11 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             additionalProperties.put(PROJECT_NAME, projectName);
         }
 
-        supportingFiles.add(new SupportingFile("AuthMethodsProvider.mustache", sourceFolder + File.separator + "Auth", projectName + "AuthMethodsProvider.swift"));
+        additionalProperties.put(USE_REALM, true);
+
+        supportingFiles.add(new SupportingFile("AuthenticationMethod.mustache", authFileFolder(), "AuthenticationMethod.swift"));
+        supportingFiles.add(new SupportingFile("APIKey.mustache", authFileFolder(), "APIKey.swift"));
+        supportingFiles.add(new SupportingFile("RequestAuthenticator.mustache", authFileFolder(), "RequestAuthenticator.swift"));
     }
 
     @Override
@@ -168,6 +174,13 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         postProcessOperations(api, (ArrayList<CodegenOperation>) api.get("operation"));
 
         return objects;
+    }
+
+    @Override
+    public void postProcessModelProperty(CodegenModel model, CodegenProperty property) {
+        property.isNumeric = isTrue(property.isInteger) || isTrue(property.isDouble)
+                || isTrue(property.isFloat) || isTrue(property.isLong)
+                || isTrue(property.isBoolean);
     }
 
     @Override
@@ -390,5 +403,13 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private String getOutputFolder() {
         return outputFolder + File.separator + sourceFolder;
+    }
+
+    private String authFileFolder() {
+        return projectName + File.separator + "Auth";
+    }
+
+    private boolean isTrue(Boolean b) {
+        return b != null && b;
     }
 }

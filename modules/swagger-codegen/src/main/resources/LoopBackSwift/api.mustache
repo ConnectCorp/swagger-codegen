@@ -2,8 +2,6 @@ import LoopBackSwift
 
 {{#operations}}public class {{classname}}: LoopBackAPI {
 
-    lazy let authsProvider = {{projectName}}AuthMethodsProvider()
-
     public convenience init(requestor:Requestable) {
         self.init(requestor: requestor, baseURL: { return NSURL("{{basePath}}")! })
     }
@@ -14,10 +12,6 @@ import LoopBackSwift
 
     public override var resourcePath:String? {
         return "{{resourcePath}}"
-    }
-
-    public override var authMethodsProvider:AuthMethodsProvider? {
-        return authsProvider
     }
 
 {{#operation}}
@@ -40,7 +34,7 @@ import LoopBackSwift
     {{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/headerParams}}{{/hasHeaderParams}}
             ){{/hasHTTPParams}}{{#hasAuthMethods}},
-            authMethods: [{{#authMethods}}"{{name}}"{{#hasMore}}, {{/hasMore}}{{/authMethods}}]{{/hasAuthMethods}}{{#hasBodyParam}},
+            transformers: [RequestAuthenticator(methods: [{{#authMethods}}"{{name}}"{{#hasMore}}, {{/hasMore}}{{/authMethods}}])]{{/hasAuthMethods}}{{#hasBodyParam}},
             {{#bodyParam}}body: { return {{paramName}}.toJSON() }{{/bodyParam}}{{/hasBodyParam}}
         )
     }{{#hasMore}}

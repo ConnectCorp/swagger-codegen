@@ -1,18 +1,24 @@
 {{#models}}{{#model}}import ObjectMapper
+{{#useRealm}}
 import Realm
 import RealmSwift
+{{/useRealm}}
 
-public class {{classname}}: Object, Mappable, CustomStringConvertible {
+public class {{classname}}: {{#useRealm}}Object, {{/useRealm}}Mappable, CustomStringConvertible {
 {{#vars}}{{#isEnum}}
     public enum {{datatypeWithEnum}}: String { {{#allowableValues}}{{#values}}
         case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
     }
 {{/isEnum}}{{/vars}}
-{{#vars}}{{#isEnum}}    public dynamic var {{name}}: {{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    public dynamic var {{name}}: {{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}
+{{#vars}}{{#isEnum}}    public dynamic var {{name}}: {{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    {{#useRealm}}public dynamic var {{name}}{{#isNumeric}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/isNumeric}}{{^isNumeric}}: {{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public dynamic var {{name}}: {{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}
 {{/vars}}
 
     public override var description: String {
         return "{{classname}}({{#vars}}\n    {{name}}: \({{name}}){{#hasMore}},{{/hasMore}}{{^hasMore}}\n{{/hasMore}}{{/vars}})"
+    }{{#useRealm}}
+
+    public required init() {
+        super.init()
     }
 
     public required init(value: AnyObject, schema: RLMSchema) {
@@ -21,14 +27,10 @@ public class {{classname}}: Object, Mappable, CustomStringConvertible {
 
     public required init(realm: RLMRealm, schema: RLMObjectSchema) {
         super.init(realm: realm, schema: schema)
-    }
+    }{{/useRealm}}
 
     public required convenience init?(_ map: Map) {
         self.init()
-    }
-
-    public required init() {
-        super.init()
     }
 
     public func mapping(map: Map) {
