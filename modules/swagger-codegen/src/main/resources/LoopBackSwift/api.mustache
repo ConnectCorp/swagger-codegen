@@ -1,6 +1,7 @@
 import LoopBackSwift
 
 {{#operations}}public class {{classname}}: LoopBackAPI {
+    let authenticator = RequestAuthenticator()
 
     public convenience init(requestor:Requestable) {
         self.init(requestor: requestor, baseURL: { return NSURL("{{basePath}}")! })
@@ -34,7 +35,7 @@ import LoopBackSwift
     {{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/headerParams}}{{/hasHeaderParams}}
             ){{/hasHTTPParams}}{{#hasAuthMethods}},
-            transformers: [RequestAuthenticator(methods: [{{#authMethods}}"{{name}}"{{#hasMore}}, {{/hasMore}}{{/authMethods}}])]{{/hasAuthMethods}}{{#hasBodyParam}},
+            transformers: [authenticator.with(methods: [{{#authMethods}}"{{name}}"{{#hasMore}}, {{/hasMore}}{{/authMethods}}])]{{/hasAuthMethods}}{{#hasBodyParam}},
             {{#bodyParam}}body: { return {{paramName}}.toJSON() }{{/bodyParam}}{{/hasBodyParam}}
         )
     }{{#hasMore}}
