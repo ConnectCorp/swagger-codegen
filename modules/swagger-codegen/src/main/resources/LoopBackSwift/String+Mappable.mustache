@@ -1,0 +1,12 @@
+import Foundation
+import ObjectMapper
+
+extension String : Mappable {
+    public init(_ map: Map) {
+        self.init()
+    }
+
+    public mutating func mapping(map: Map) {
+        self <- map
+    }
+}
