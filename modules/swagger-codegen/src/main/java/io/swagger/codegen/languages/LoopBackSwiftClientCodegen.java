@@ -20,6 +20,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private static final String USE_REALM = "useRealm";
 
+    private static final String REALM_PRIMARY_KEY = "realmPrimaryKey";
+
     private static final String NAME = "LoopBackSwift";
 
     private static final String HELP = "Generates a client library for the LoopBackSwift framework.";
@@ -145,7 +147,15 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             additionalProperties.put(PROJECT_NAME, projectName);
         }
 
-        additionalProperties.put(USE_REALM, true);
+        if (!additionalProperties.containsKey(USE_REALM)) {
+            additionalProperties.put(USE_REALM, false);
+        } else {
+            additionalProperties.put(USE_REALM, additionalProperties.get(USE_REALM).equals("true"));
+        }
+
+        if (!additionalProperties.containsKey(REALM_PRIMARY_KEY)) {
+            additionalProperties.put(REALM_PRIMARY_KEY, "id");
+        }
 
         supportingFiles.add(new SupportingFile("AuthenticationMethod.mustache", authFileFolder(), "AuthenticationMethod.swift"));
         supportingFiles.add(new SupportingFile("APIKey.mustache", authFileFolder(), "APIKey.swift"));
