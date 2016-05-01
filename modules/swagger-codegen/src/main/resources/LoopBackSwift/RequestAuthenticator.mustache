@@ -2,16 +2,14 @@ import Foundation
 import LoopBackSwift
 
 public class RequestAuthenticator: RequestTransformer {
-    let methods:[String] = []
+    var methods:[String] = []
+
+    public let authenticationMethods:[String : AuthenticationMethod] = {{^hasAuthMethods}}[:]{{/hasAuthMethods}}{{#hasAuthMethods}}[
+        {{#authMethods}}"{{name}}" : {{#isApiKey}}APIKey(name: "{{keyParamName}}", type: {{#isKeyInHeader}}.Header{{/isKeyInHeader}}{{#isKeyInQuery}}.Query{{/isKeyInQuery}}){{/isApiKey}}{{#hasMore}},
+        {{/hasMore}}{{/authMethods}}{{/hasAuthMethods}}
+    ]
 
     public init() {
-    }
-
-    public var authenticationMethods:[String : AuthenticationMethod] {
-        return {{^hasAuthMethods}}[:]{{/hasAuthMethods}}{{#hasAuthMethods}}[
-            {{#authMethods}}"{{name}}" : {{#isApiKey}}APIKey(name: "{{keyParamName}}", type: {{#isKeyInHeader}}.Header{{/isKeyInHeader}}{{#isKeyInQuery}}.Query{{/isKeyInQuery}}){{/isApiKey}}{{#hasMore}},
-        {{/hasMore}}{{/authMethods}}{{/hasAuthMethods}}
-        ]
     }
 
     public func with(methods methods:[String]) -> RequestAuthenticator {

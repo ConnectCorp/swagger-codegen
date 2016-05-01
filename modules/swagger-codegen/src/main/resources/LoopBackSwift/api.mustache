@@ -1,14 +1,17 @@
+import Alamofire
+import RxSwift
 import LoopBackSwift
 
 {{#operations}}public class {{classname}}: LoopBackAPI {
+
     let authenticator = RequestAuthenticator()
 
-    public convenience init(requestor:Requestable) {
-        self.init(requestor: requestor, baseURL: { return NSURL("{{basePath}}")! })
+    public convenience init(manager:Manager) {
+        self.init(manager: manager, baseURL: { return NSURL(string: "{{basePath}}")! })
     }
 
-    public override init(requestor:Requestable, baseURL:BaseURLClosure) {
-        super.init(requestor: requestor, baseURL: baseURL)
+    public required init(manager:Manager, baseURL:URLClosure) {
+        super.init(manager: manager, baseURL: baseURL)
     }
 
     public override var resourcePath:String? {
@@ -16,11 +19,11 @@ import LoopBackSwift
     }
 
 {{#operation}}
-    public func {{operationId}}({{#hasParams}}{{#allParams}}{{paramName}}:{{dataType}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/hasParams}}) -> Observable<{{#successfulResponse}}{{dataType}}{{/successfulResponse}}> {
+    public func {{operationId}}({{#hasParams}}{{#allParams}}{{paramName}}:{{dataType}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/hasParams}}) throws -> Observable<{{#successfulResponse}}{{dataType}}{{/successfulResponse}}> {
         return try request{{#successfulResponse}}{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Array{{/isListContainer}}{{/successfulResponse}}(
             .{{httpMethod}}{{#hasPath}},
             path: "{{path}}"{{/hasPath}}{{#hasHTTPParams}},
-            parameters: HTTP.Parameters(
+            params: HTTP.Parameters(
                 {{#hasQueryParams}}query: [
     {{#queryParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{paramName}}" : {{paramName}}{{#hasMore}},
     {{/hasMore}}{{^hasMore}}

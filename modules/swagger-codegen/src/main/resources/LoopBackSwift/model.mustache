@@ -10,7 +10,7 @@ public class {{classname}}: {{#useRealm}}Object, {{/useRealm}}Mappable, CustomSt
         case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
     }
 {{/isEnum}}{{/vars}}
-{{#vars}}{{#isEnum}}    public dynamic var {{name}}: {{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    {{#useRealm}}public dynamic var {{name}}{{#isNumeric}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/isNumeric}}{{^isNumeric}}: {{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public dynamic var {{name}}: {{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}
+{{#vars}}{{#isEnum}}    public dynamic var {{name}}: {{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    {{#useRealm}}public{{^isNumeric}} dynamic{{/isNumeric}} var {{name}}{{#isNumeric}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/isNumeric}}{{^isNumeric}}: {{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public dynamic var {{name}}: {{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}
 {{/vars}}
 
     public override var description: String {
