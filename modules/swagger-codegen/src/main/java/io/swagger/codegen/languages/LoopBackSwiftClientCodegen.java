@@ -23,6 +23,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private static final String PROJECT_NAME = "projectName";
 
+    private static final String PROJECT_LICENSE = "projectLicense";
+
     private static final String NAME = "LoopBackSwift";
 
     private static final String HELP = "Generates a client library for the LoopBackSwift framework.";
@@ -158,6 +160,10 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             additionalProperties.put(PROJECT_NAME, projectName);
         } else {
             projectName = sourceFolder = additionalProperties.get(PROJECT_NAME).toString();
+        }
+
+        if (!additionalProperties.containsKey(PROJECT_LICENSE)) {
+            additionalProperties.put(PROJECT_LICENSE, "The MIT License (MIT)");
         }
 
         supportingFiles.add(new SupportingFile("AuthenticationMethod.mustache", authFileFolder(), "AuthenticationMethod.swift"));
