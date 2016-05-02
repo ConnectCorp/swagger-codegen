@@ -1,6 +1,7 @@
 import Foundation
+import Alamofire
 
-public class APIKey: AuthenticationMethod {
+public class APIKey : AuthenticationMethod {
     public enum Type {
         case Header
         case Query
@@ -23,7 +24,7 @@ public class APIKey: AuthenticationMethod {
             request.addValue(value, forHTTPHeaderField: name)
 
         case .Query:
-            request.setValue(value, forKey: name)
+            ParameterEncoding.URL.encode(request, parameters: [name : value])
         }
     }
 }
