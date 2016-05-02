@@ -42,6 +42,8 @@ public class CodegenProperty {
     public CodegenProperty items;
     public Map<String, Object> vendorExtensions;
 
+    public Boolean isNumeric;
+
     @Override
     public int hashCode()
     {
