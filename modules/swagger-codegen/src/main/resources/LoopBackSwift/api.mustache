@@ -7,10 +7,10 @@ import LoopBackSwift
     let authenticator = RequestAuthenticator()
 
     public convenience init(manager:Manager) {
-        self.init(manager: manager, baseURL: { return NSURL(string: "{{basePath}}")! })
+        self.init(manager: manager, baseURL: Observable.just(NSURL(string: "{{basePath}}")!))
     }
 
-    public required init(manager:Manager, baseURL:URLClosure) {
+    public required init(manager:Manager, baseURL:Observable<NSURL>) {
         super.init(manager: manager, baseURL: baseURL)
     }
 
