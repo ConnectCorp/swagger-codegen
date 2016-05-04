@@ -172,8 +172,6 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
         supportingFiles.add(new SupportingFile("String+URLEscapedString.mustache", utilFileFolder(), "String+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("Double+URLEscapedString.mustache", utilFileFolder(), "Double+URLEscapedString.swift"));
-        supportingFiles.add(new SupportingFile("String+Mappable.mustache", utilFileFolder(), "String+Mappable.swift"));
-        supportingFiles.add(new SupportingFile("Bool+Mappable.mustache", utilFileFolder(), "Bool+Mappable.swift"));
 
         supportingFiles.add(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
         supportingFiles.add(new SupportingFile("LICENSE.mustache", "", "LICENSE"));
@@ -341,7 +339,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         }
 
         for (CodegenResponse response: responses) {
-            if (response.code.startsWith("2") && response.dataType != null) {
+            if (response.code.startsWith("2") && response.dataType != null && !response.primitiveType) {
                 return response;
             }
         }
