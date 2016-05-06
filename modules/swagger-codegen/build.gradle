@@ -1,8 +1,8 @@
 
 description = 'swagger-codegen (core library)'
 dependencies {
-    compile group: 'io.swagger', name: 'swagger-parser', version:'1.0.18-SNAPSHOT'
-    compile group: 'io.swagger', name: 'swagger-compat-spec-parser', version:'1.0.18-SNAPSHOT'
+    compile group: 'io.swagger', name: 'swagger-parser', version:'1.0.18'
+    compile group: 'io.swagger', name: 'swagger-compat-spec-parser', version:'1.0.18'
     compile group: 'io.swagger', name: 'swagger-core', version:'1.5.7'
     compile group: 'com.samskivert', name: 'jmustache', version:'1.9'
     compile group: 'commons-io', name: 'commons-io', version:'2.4'
