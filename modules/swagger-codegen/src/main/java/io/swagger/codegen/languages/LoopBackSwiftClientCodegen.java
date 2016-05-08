@@ -58,10 +58,12 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         outputFolder = "generated-code" + File.separator + NAME;
         modelTemplateFiles.put("model.mustache", ".swift");
         apiTemplateFiles.put("api.mustache", ".swift");
+        repositoryTemplateFiles.put("repository.mustache", ".swift");
 
         embeddedTemplateDir = templateDir = NAME;
         apiPackage = File.separator + "APIs";
         modelPackage = File.separator + "Models";
+        repositoryPackage = File.separator + "Repositories";
 
         setupLanguageSpecificPrimitives();
         setupDefaultIncludes();
@@ -170,6 +172,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("APIKey.mustache", authFileFolder(), "APIKey.swift"));
         supportingFiles.add(new SupportingFile("RequestAuthenticator.mustache", authFileFolder(), "RequestAuthenticator.swift"));
 
+        supportingFiles.add(new SupportingFile("ConnectivityManager.mustache", utilFileFolder(), "ConnectivityManager.swift"));
+        supportingFiles.add(new SupportingFile("RealmManager.mustache", utilFileFolder(), "RealmManager.swift"));
         supportingFiles.add(new SupportingFile("String+URLEscapedString.mustache", utilFileFolder(), "String+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("Double+URLEscapedString.mustache", utilFileFolder(), "Double+URLEscapedString.swift"));
 
@@ -190,6 +194,11 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     @Override
     public String apiFileFolder() {
         return getOutputFolder() + apiPackage().replace('.', File.separatorChar);
+    }
+
+    @Override
+    public String repositoryFileFolder() {
+        return getOutputFolder() + repositoryPackage.replace('.', File.separatorChar);
     }
 
     @Override

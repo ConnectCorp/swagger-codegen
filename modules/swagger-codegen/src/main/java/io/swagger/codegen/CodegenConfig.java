@@ -41,6 +41,10 @@ public interface CodegenConfig {
 
     String modelTestFileFolder();
 
+    String repositoryPackage();
+
+    String repositoryFileFolder();
+
     String modelPackage();
 
     String toApiName(String name);
@@ -48,6 +52,8 @@ public interface CodegenConfig {
     String toApiVarName(String name);
 
     String toModelName(String name);
+
+    String toRepositoryName(String name);
 
     String toParamName(String name);
 
@@ -95,6 +101,8 @@ public interface CodegenConfig {
 
     Map<String, String> modelTemplateFiles();
 
+    Map<String, String> repositoryTemplateFiles();
+
     Map<String, String> apiTestTemplateFiles();
 
     Map<String, String> modelTestTemplateFiles();
@@ -134,6 +142,8 @@ public interface CodegenConfig {
     String apiFilename(String templateName, String tag);
 
     String apiTestFilename(String templateName, String tag);
+
+    String repositoryFilename(String templateName, String tag);
 
     boolean shouldOverwrite(String filename);
 

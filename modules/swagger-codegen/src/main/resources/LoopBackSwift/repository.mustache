@@ -1,0 +1,59 @@
+import Alamofire
+import RxSwift
+import LoopBackQuery
+
+{{#operations}}public class {{repositoryClassName}} {
+    let realmManager:RealmManager
+
+    let connectivityManager:ConnectivityManager
+
+    public let api:{{classname}}
+
+    public init(manager:Manager, realmManager:RealmManager, connectivityManager:ConnectivityManager) {
+        self.api = {{classname}}(manager: manager, baseURL: Observable.just(NSURL(string: "{{basePath}}")!))
+        self.realmManager = realmManager
+    }
+
+    public func create(data:{{baseName}}) throws -> Observable<{{baseName}}> {
+        api.create(data).subscribeNext { realmManager.save(data, update: true) }
+    }
+
+    public func update(data:{{baseName}}) throws -> Observable<{{baseName}}> {
+        api.upsert(data).subscribeNext { realmManager.save(data, update: true) }
+    }
+
+    public func findById(id:String) throws -> Observable<{{baseName}}> {
+        if connectivityManager.isConnected {
+            return api.findById(id, filter: "{}")
+        }
+
+        if let data = realmManager.findById({{baseName}}.self, id: id) {
+            return Observable.just(data)
+        } else {
+            return Observable.create { $0.onError(RepositoryError("No {{baseName}} with id \(id)")) }
+        }
+    }
+
+    public func find(query:Query) throws -> Observable<[{{baseName}}]> {
+        if connectivityManager.isConnected {
+            return api.find(try query.toLoopBackString())
+        }
+
+        return realmManager.find({{baseName}}.self, predicate: query.toNSPredicate())
+    }
+
+    public func deleteById(id:String) throws -> Observable<{{baseName}}> {
+        return Observable.create { [weak self] observer in
+            if let repository = self {
+                repository.findById(id).subscribeNext { data in
+                    if connectivityManager.isConnected {
+                        api.deleteById(id).subscribeNext { _ in
+                            realmManager.delete(data)
+                            observer.onNext(data)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}{{/operations}}

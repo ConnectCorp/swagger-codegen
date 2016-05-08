@@ -301,6 +301,7 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
                     operation.put("classname", config.toApiName(tag));
                     operation.put("classVarName", config.toApiVarName(tag));
                     operation.put("importPath", config.toApiImport(tag));
+                    operation.put("repositoryClassName", config.toRepositoryName(tag));
                     
                     if(!config.vendorExtensions().isEmpty()) {
                     	operation.put("vendorExtensions", config.vendorExtensions());
@@ -343,6 +344,27 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
                                 .compile(template);
 
                         writeToFile(filename, tmpl.execute(operation));
+                        files.add(new File(filename));
+                    }
+
+                    // Generate DataRepository files
+                    for (String templateName : config.repositoryTemplateFiles().keySet()) {
+                        String filename = config.repositoryFilename(templateName, tag);
+                        if (!config.shouldOverwrite(filename) && new File(filename).exists()) {
+                            continue;
+                        }
+
+                        String templateFile = getFullTemplateFile(config, templateName);
+                        String templateString = readTemplate(templateFile);
+
+                        Template template = Mustache.compiler().withLoader(new Mustache.TemplateLoader() {
+                            @Override
+                            public Reader getTemplate(String name) throws Exception {
+                                return getTemplateReader(getFullTemplateFile(config, name + ".mustache"));
+                            }
+                        }).defaultValue("").compile(templateString);
+
+                        writeToFile(filename, template.execute(operation));
                         files.add(new File(filename));
                     }
 
