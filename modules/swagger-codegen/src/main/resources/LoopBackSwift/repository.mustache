@@ -9,17 +9,18 @@ import LoopBackQuery
 
     public let api:{{classname}}
 
-    public init(manager:Manager, realmManager:RealmManager, connectivityManager:ConnectivityManager) {
-        self.api = {{classname}}(manager: manager, baseURL: Observable.just(NSURL(string: "{{basePath}}")!))
+    public init(alamofireManager:Manager, realmManager:RealmManager, connectivityManager:ConnectivityManager) {
+        self.api = {{classname}}(manager: alamofireManager, baseURL: Observable.just(NSURL(string: "{{basePath}}")!))
         self.realmManager = realmManager
+        self.connectivityManager = connectivityManager
     }
 
     public func create(data:{{baseName}}) throws -> Observable<{{baseName}}> {
-        api.create(data).subscribeNext { realmManager.save(data, update: true) }
+        return api.create(data).doOnNext { realmManager.save(data, update: true) }
     }
 
     public func update(data:{{baseName}}) throws -> Observable<{{baseName}}> {
-        api.upsert(data).subscribeNext { realmManager.save(data, update: true) }
+        return api.upsert(data).doOnNext { realmManager.save(data, update: true) }
     }
 
     public func findById(id:String) throws -> Observable<{{baseName}}> {
@@ -34,6 +35,14 @@ import LoopBackQuery
         }
     }
 
+    public func findOne(query:Query) throws -> Observable<{{baseName}}> {
+        if connectivityManager.isConnected {
+            return try api.findOne(query.toLoopBackString())
+        }
+
+        return realmManager.findOne({{baseName}}.self, predicate: query.toNSPredicate())
+    }
+
     public func find(query:Query) throws -> Observable<[{{baseName}}]> {
         if connectivityManager.isConnected {
             return api.find(try query.toLoopBackString())
@@ -46,9 +55,9 @@ import LoopBackQuery
         return Observable.create { [weak self] observer in
             if let repository = self {
                 repository.findById(id).subscribeNext { data in
-                    if connectivityManager.isConnected {
-                        api.deleteById(id).subscribeNext { _ in
-                            realmManager.delete(data)
+                    if repository.connectivityManager.isConnected {
+                        repository.api.deleteById(id).subscribeNext { _ in
+                            repository.realmManager.delete(data)
                             observer.onNext(data)
                         }
                     }
