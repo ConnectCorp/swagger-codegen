@@ -288,7 +288,9 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             throw new RuntimeException("'" + id + "' cannot be used as method name.");
         }
 
-        return camelize(sanitizeName(id), true);
+        String[] parts = id.split(Pattern.quote("."));
+
+        return camelize(sanitizeName(parts[parts.length - 1]), true);
     }
 
     @Override
@@ -437,6 +439,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     private String utilFileFolder() {
         return projectName + File.separator + "Util";
     }
+
+    private String repositoriesFileFolder() { return projectName + File.separator + "Repositories"; }
 
     private boolean isTrue(Boolean b) {
         return b != null && b;
