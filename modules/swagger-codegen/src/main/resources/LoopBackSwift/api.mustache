@@ -1,7 +1,7 @@
 import Alamofire
 import RxSwift
 
-{{#operations}}public class {{classname}} : API {{#generateDataRepository}}
+{{#operations}}public class {{classname}} : API { {{#generateDataRepository}}
     public typealias ModelType = {{baseName}}
     public typealias CountType = {{countReturnType}}
     public typealias DeleteType = {{deleteReturnType}}{{/generateDataRepository}}

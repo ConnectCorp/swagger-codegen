@@ -33,7 +33,7 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable, CustomS
         super.init(realm: realm, schema: schema)
     }{{/useRealm}}{{^useRealm}}
 
-    public init({{#vars}}{{name}}: {{datatype}}? = {{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}{{^defaultValue}}nil{{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/vars}}) {
+    public init({{#vars}}{{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}? = {{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}{{^defaultValue}}nil{{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/vars}}) {
         {{#vars}}self.{{name}} = {{name}}{{#hasMore}}
         {{/hasMore}}{{/vars}}
     }{{/useRealm}}
