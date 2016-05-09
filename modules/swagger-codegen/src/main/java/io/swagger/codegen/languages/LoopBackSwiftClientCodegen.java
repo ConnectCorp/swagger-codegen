@@ -172,8 +172,13 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("APIKey.mustache", authFileFolder(), "APIKey.swift"));
         supportingFiles.add(new SupportingFile("RequestAuthenticator.mustache", authFileFolder(), "RequestAuthenticator.swift"));
 
+        supportingFiles.add(new SupportingFile("BaseAPI.mustache", utilFileFolder(), "API.swift"));
+        supportingFiles.add(new SupportingFile("APIError.mustache", utilFileFolder(), "APIError.swift"));
+        supportingFiles.add(new SupportingFile("RxAlamofireObjectMapping.mustache", utilFileFolder(), "RxAlamofireObjectMapping.swift"));
         supportingFiles.add(new SupportingFile("ConnectivityManager.mustache", utilFileFolder(), "ConnectivityManager.swift"));
         supportingFiles.add(new SupportingFile("RealmManager.mustache", utilFileFolder(), "RealmManager.swift"));
+        supportingFiles.add(new SupportingFile("RepositoryError.mustache", utilFileFolder(), "RepositoryError.swift"));
+        supportingFiles.add(new SupportingFile("Query+toNSPredicate.mustache", utilFileFolder(), "Query+toNSPredicate.swift"));
         supportingFiles.add(new SupportingFile("String+URLEscapedString.mustache", utilFileFolder(), "String+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("Double+URLEscapedString.mustache", utilFileFolder(), "Double+URLEscapedString.swift"));
 
@@ -317,8 +322,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         }
 
         String resourcePath = "/" + operations.get(0).path.split("/")[1];
-
-        List<CodegenOperation> postProcessed = new ArrayList<CodegenOperation>();
+        String countReturnType = "";
+        String deleteReturnType = "";
 
         for (CodegenOperation operation: operations) {
             if (operation.path.equals(resourcePath)) {
@@ -337,9 +342,19 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             if (operation.successfulResponse.containerType != null && operation.successfulResponse.containerType.equals("array")) {
                 operation.successfulResponse.isListContainer = true;
             }
+
+            if (operation.operationId.equals("count")) {
+                countReturnType = operation.successfulResponse.dataType;
+            }
+
+            if (operation.operationId.equals("deleteById")) {
+                deleteReturnType = operation.successfulResponse.dataType;
+            }
         }
 
         api.put("resourcePath", resourcePath);
+        api.put("countReturnType", countReturnType);
+        api.put("deleteReturnType", deleteReturnType);
     }
 
     private CodegenResponse findSuccessfulResponse(List<CodegenResponse> responses) {

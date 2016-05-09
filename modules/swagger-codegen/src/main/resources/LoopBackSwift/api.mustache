@@ -1,20 +1,24 @@
 import Alamofire
 import RxSwift
-import LoopBackSwift
 
-{{#operations}}public class {{classname}} : LoopBackAPI {
+{{#operations}}public class {{classname}} : API {
+    public typealias ModelType = {{baseName}}
+    public typealias CountType = {{countReturnType}}
+    public typealias DeleteType = {{deleteReturnType}}
 
     let authenticator = RequestAuthenticator()
 
-    public convenience init(manager:Manager) {
-        self.init(manager: manager, baseURL: Observable.just(NSURL(string: "{{basePath}}")!))
+    public let manager:Manager
+
+    public init(manager:Manager) {
+        self.manager = manager
     }
 
-    public required init(manager:Manager, baseURL:Observable<NSURL>) {
-        super.init(manager: manager, baseURL: baseURL)
+    public var baseURL:NSURL {
+        return NSURL(string: "{{basePath}}")!
     }
 
-    public override var resourcePath:String? {
+    public var resourcePath:String? {
         return "{{resourcePath}}"
     }
 
@@ -23,7 +27,7 @@ import LoopBackSwift
         return try request{{#successfulResponse}}{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Array{{/isListContainer}}{{/successfulResponse}}(
             .{{httpMethod}}{{#hasPath}},
             path: "{{path}}"{{/hasPath}}{{#hasHTTPParams}},
-            params: HTTP.Parameters(
+            params: Parameters(
                 {{#hasQueryParams}}query: [
     {{#queryParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{paramName}}" : {{paramName}}{{#hasMore}},
     {{/hasMore}}{{^hasMore}}
