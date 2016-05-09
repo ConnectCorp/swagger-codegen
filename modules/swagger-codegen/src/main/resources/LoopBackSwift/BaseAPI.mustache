@@ -81,7 +81,7 @@ public protocol API { {{#generateDataRepository}}
 
     func find(filter:String) throws -> Observable<[ModelType]>
 
-    func count(where:String) throws -> Observable<CountType>
+    func count(_where:String) throws -> Observable<CountType>
 
     func deleteById(id:String) throws -> Observable<DeleteType>{{/generateDataRepository}}
 }

@@ -43,7 +43,7 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable, CustomS
     }
 
     public func mapping(map:Map) {
-        {{#vars}}{{name}} <- map["{{name}}"]{{#hasMore}}
+        {{#vars}}{{name}} <- map["{{baseName}}"]{{#hasMore}}
         {{/hasMore}}{{/vars}}
     }
 }
