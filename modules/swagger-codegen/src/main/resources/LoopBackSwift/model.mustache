@@ -6,11 +6,11 @@ import RealmSwift
 
 public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable, CustomStringConvertible {
 {{#vars}}{{#isEnum}}
-    public enum {{datatypeWithEnum}}: String { {{#allowableValues}}{{#values}}
+    public enum {{datatypeWithEnum}} : String { {{#allowableValues}}{{#values}}
         case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
     }
 {{/isEnum}}{{/vars}}
-{{#vars}}{{#isEnum}}    public var {{name}}: {{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    {{#useRealm}}public{{^isNumeric}} dynamic{{/isNumeric}} var {{name}}{{#isNumeric}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/isNumeric}}{{^isNumeric}}: {{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public var {{name}}: {{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}
+{{#vars}}{{#isEnum}}    public var {{name}}:{{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    {{#useRealm}}public{{^isNumeric}} dynamic{{/isNumeric}} var {{name}}{{#isNumeric}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/isNumeric}}{{^isNumeric}}:{{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public var {{name}}:{{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}
 {{/vars}}
 
     public {{#useRealm}}override {{/useRealm}}var description: String {
@@ -25,24 +25,24 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable, CustomS
         super.init()
     }
 
-    public required init(value: AnyObject, schema: RLMSchema) {
+    public required init(value:AnyObject, schema:RLMSchema) {
         super.init(value: value, schema: schema)
     }
 
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+    public required init(realm:RLMRealm, schema:RLMObjectSchema) {
         super.init(realm: realm, schema: schema)
     }{{/useRealm}}{{^useRealm}}
 
-    public init({{#vars}}{{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}? = {{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}{{^defaultValue}}nil{{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/vars}}) {
+    public init({{#vars}}{{name}}:{{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}? = {{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}{{^defaultValue}}nil{{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/vars}}) {
         {{#vars}}self.{{name}} = {{name}}{{#hasMore}}
         {{/hasMore}}{{/vars}}
     }{{/useRealm}}
 
-    public required convenience init?(_ map: Map) {
+    public required convenience init?(_ map:Map) {
         self.init()
     }
 
-    public func mapping(map: Map) {
+    public func mapping(map:Map) {
         {{#vars}}{{name}} <- map["{{name}}"]{{#hasMore}}
         {{/hasMore}}{{/vars}}
     }

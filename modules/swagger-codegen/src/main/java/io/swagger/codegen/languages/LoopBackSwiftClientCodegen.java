@@ -251,6 +251,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             if (model.hasId()) {
                 CodegenProperty id = model.getId();
 
+                // When using Realm, if the primary key data type is Double, change it to Int.
                 if (id.datatype.equals("Double")) {
                     id.datatype = "Int";
                 }
@@ -262,6 +263,15 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     @Override
     public void postProcessModelProperty(CodegenModel model, CodegenProperty property) {
+        // For some properties, property.isDouble is not true even if property.datatype is Double.
+        if (property.datatype.equals("Double")) {
+            property.isDouble = true;
+        }
+
+        if (property.datatype.equals("Int")) {
+            property.isInteger = true;
+        }
+
         property.isNumeric = isTrue(property.isInteger) || isTrue(property.isDouble)
                 || isTrue(property.isFloat) || isTrue(property.isLong)
                 || isTrue(property.isBoolean);
