@@ -37,6 +37,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private static int anonymousApisCount = 0;
 
+    private String modelId;
+
     @Override
     public CodegenType getTag() {
         return CodegenType.CLIENT;
@@ -168,6 +170,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             additionalProperties.put(PROJECT_LICENSE, "The MIT License (MIT)");
         }
 
+        modelId = additionalProperties.get(REALM_PRIMARY_KEY).toString();
+
         supportingFiles.add(new SupportingFile("AuthenticationMethod.mustache", authFileFolder(), "AuthenticationMethod.swift"));
         supportingFiles.add(new SupportingFile("APIKey.mustache", authFileFolder(), "APIKey.swift"));
         supportingFiles.add(new SupportingFile("RequestAuthenticator.mustache", authFileFolder(), "RequestAuthenticator.swift"));
@@ -213,6 +217,26 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         postProcessOperations(api, (ArrayList<CodegenOperation>) api.get("operation"));
 
         return objects;
+    }
+
+    @Override
+    public Map<String, Object> postProcessModels(Map<String, Object> objs) {
+        ArrayList<HashMap<String, Object>> models = (ArrayList<HashMap<String, Object>>) objs.get("models");
+
+        for (HashMap<String, Object> modelData: models) {
+            CodegenModel model = (CodegenModel) modelData.get("model");
+            model.id = modelId;
+
+            if (model.hasId()) {
+                CodegenProperty id = model.getId();
+
+                if (id.datatype.equals("Double")) {
+                    id.datatype = "Int";
+                }
+            }
+        }
+
+        return objs;
     }
 
     @Override

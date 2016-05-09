@@ -15,11 +15,11 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable, CustomS
 
     public {{#useRealm}}override {{/useRealm}}var description: String {
         return "{{classname}}({{#vars}}\n    {{name}}: \({{name}}){{#hasMore}},{{/hasMore}}{{^hasMore}}\n{{/hasMore}}{{/vars}})"
-    }{{#useRealm}}
+    }{{#useRealm}}{{#hasId}}
 
     public override static func primaryKey() -> String? {
         return "{{realmPrimaryKey}}"
-    }
+    }{{/hasId}}
 
     public required init() {
         super.init()
