@@ -21,6 +21,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private static final String REALM_PRIMARY_KEY = "realmPrimaryKey";
 
+    private static final String GENERATE_DATA_REPOSITORY = "generateDataRepository";
+
     private static final String PROJECT_NAME = "projectName";
 
     private static final String PROJECT_LICENSE = "projectLicense";
@@ -170,6 +172,19 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             additionalProperties.put(PROJECT_LICENSE, "The MIT License (MIT)");
         }
 
+        Boolean useRealm = (Boolean) additionalProperties.get(USE_REALM);
+        if (useRealm) {
+            if (!additionalProperties.containsKey(GENERATE_DATA_REPOSITORY)) {
+                additionalProperties.put(GENERATE_DATA_REPOSITORY, true);
+            } else {
+                additionalProperties.put(GENERATE_DATA_REPOSITORY, additionalProperties.get(GENERATE_DATA_REPOSITORY).equals("true"));
+            }
+        } else {
+            if (additionalProperties.containsKey(GENERATE_DATA_REPOSITORY)) {
+                additionalProperties.put(GENERATE_DATA_REPOSITORY, false);
+            }
+        }
+
         modelId = additionalProperties.get(REALM_PRIMARY_KEY).toString();
 
         supportingFiles.add(new SupportingFile("AuthenticationMethod.mustache", authFileFolder(), "AuthenticationMethod.swift"));
@@ -179,12 +194,18 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("BaseAPI.mustache", utilFileFolder(), "API.swift"));
         supportingFiles.add(new SupportingFile("APIError.mustache", utilFileFolder(), "APIError.swift"));
         supportingFiles.add(new SupportingFile("RxAlamofireObjectMapping.mustache", utilFileFolder(), "RxAlamofireObjectMapping.swift"));
-        supportingFiles.add(new SupportingFile("ConnectivityManager.mustache", utilFileFolder(), "ConnectivityManager.swift"));
-        supportingFiles.add(new SupportingFile("RealmManager.mustache", utilFileFolder(), "RealmManager.swift"));
-        supportingFiles.add(new SupportingFile("RepositoryError.mustache", utilFileFolder(), "RepositoryError.swift"));
-        supportingFiles.add(new SupportingFile("Query+toNSPredicate.mustache", utilFileFolder(), "Query+toNSPredicate.swift"));
         supportingFiles.add(new SupportingFile("String+URLEscapedString.mustache", utilFileFolder(), "String+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("Double+URLEscapedString.mustache", utilFileFolder(), "Double+URLEscapedString.swift"));
+
+        Boolean generateDataRepository = (Boolean) additionalProperties.get(GENERATE_DATA_REPOSITORY);
+        if (!generateDataRepository) {
+            repositoryTemplateFiles.clear();
+        } else {
+            supportingFiles.add(new SupportingFile("RealmManager.mustache", utilFileFolder(), "RealmManager.swift"));
+            supportingFiles.add(new SupportingFile("RepositoryError.mustache", utilFileFolder(), "RepositoryError.swift"));
+            supportingFiles.add(new SupportingFile("Query+toNSPredicate.mustache", utilFileFolder(), "Query+toNSPredicate.swift"));
+            supportingFiles.add(new SupportingFile("ConnectivityManager.mustache", utilFileFolder(), "ConnectivityManager.swift"));
+        }
 
         supportingFiles.add(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
         supportingFiles.add(new SupportingFile("LICENSE.mustache", "", "LICENSE"));

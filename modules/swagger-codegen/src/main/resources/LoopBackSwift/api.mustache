@@ -1,10 +1,10 @@
 import Alamofire
 import RxSwift
 
-{{#operations}}public class {{classname}} : API {
+{{#operations}}public class {{classname}} : API {{#generateDataRepository}}
     public typealias ModelType = {{baseName}}
     public typealias CountType = {{countReturnType}}
-    public typealias DeleteType = {{deleteReturnType}}
+    public typealias DeleteType = {{deleteReturnType}}{{/generateDataRepository}}
 
     let authenticator = RequestAuthenticator()
 
