@@ -64,13 +64,11 @@ public class DefaultCodegen {
     protected Map<String, String> importMapping = new HashMap<String, String>();
     protected String modelPackage = "", apiPackage = "", fileSuffix;
     protected String modelNamePrefix = "", modelNameSuffix = "";
-    protected String repositoryPackage = "";
     protected String testPackage = "";
     protected Map<String, String> apiTemplateFiles = new HashMap<String, String>();
     protected Map<String, String> modelTemplateFiles = new HashMap<String, String>();
     protected Map<String, String> apiTestTemplateFiles = new HashMap<String, String>();
     protected Map<String, String> modelTestTemplateFiles = new HashMap<String, String>();
-    protected Map<String, String> repositoryTemplateFiles = new HashMap<String, String>();
     protected String templateDir;
     protected String embeddedTemplateDir;
     protected Map<String, Object> additionalProperties = new HashMap<String, Object>();
@@ -214,10 +212,6 @@ public class DefaultCodegen {
         return apiPackage;
     }
 
-    public String repositoryPackage() {
-        return repositoryPackage;
-    }
-
     public String fileSuffix() {
         return fileSuffix;
     }
@@ -250,10 +244,6 @@ public class DefaultCodegen {
         return modelTemplateFiles;
     }
 
-    public Map<String, String> repositoryTemplateFiles() {
-        return repositoryTemplateFiles;
-    }
-
     public String apiFileFolder() {
         return outputFolder + "/" + apiPackage().replace('.', '/');
     }
@@ -268,10 +258,6 @@ public class DefaultCodegen {
 
     public String modelTestFileFolder() {
         return outputFolder + "/" + testPackage().replace('.', '/');
-    }
-
-    public String repositoryFileFolder() {
-        return outputFolder + "/" + repositoryPackage.replace('.', '/');
     }
 
     public Map<String, Object> additionalProperties() {
@@ -316,10 +302,6 @@ public class DefaultCodegen {
 
     public void setApiPackage(String apiPackage) {
         this.apiPackage = apiPackage;
-    }
-
-    public void setRepositoryPackage(String repositoryPackage) {
-        this.repositoryPackage = repositoryPackage;
     }
 
     public void setSortParamsByRequiredFlag(Boolean sortParamsByRequiredFlag) {
@@ -378,10 +360,6 @@ public class DefaultCodegen {
      */
     public String toModelTestFilename(String name) {
         return initialCaps(name) + "Test";
-    }
-
-    public String toRepositoryFilename(String name) {
-        return initialCaps(name) + "Repository";
     }
 
     /**
@@ -867,10 +845,6 @@ public class DefaultCodegen {
      */
     public String toModelName(final String name) {
         return initialCaps(modelNamePrefix + name + modelNameSuffix);
-    }
-
-    public String toRepositoryName(String name) {
-        return initialCaps(name) + "Repository";
     }
 
     /**
@@ -2203,11 +2177,6 @@ public class DefaultCodegen {
     public String apiFilename(String templateName, String tag) {
         String suffix = apiTemplateFiles().get(templateName);
         return apiFileFolder() + '/' + toApiFilename(tag) + suffix;
-    }
-
-    public String repositoryFilename(String templateName, String tag) {
-        String suffix = repositoryTemplateFiles().get(templateName);
-        return repositoryFileFolder() + '/' + toRepositoryFilename(tag) + suffix;
     }
 
     /**

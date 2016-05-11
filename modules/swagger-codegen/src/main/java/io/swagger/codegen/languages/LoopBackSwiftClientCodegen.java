@@ -62,12 +62,10 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         outputFolder = "generated-code" + File.separator + NAME;
         modelTemplateFiles.put("model.mustache", ".swift");
         apiTemplateFiles.put("api.mustache", ".swift");
-        repositoryTemplateFiles.put("repository.mustache", ".swift");
 
         embeddedTemplateDir = templateDir = NAME;
         apiPackage = File.separator + "APIs";
         modelPackage = File.separator + "Models";
-        repositoryPackage = File.separator + "Repositories";
 
         setupLanguageSpecificPrimitives();
         setupDefaultIncludes();
@@ -172,19 +170,6 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             additionalProperties.put(PROJECT_LICENSE, "The MIT License (MIT)");
         }
 
-        Boolean useRealm = (Boolean) additionalProperties.get(USE_REALM);
-        if (useRealm) {
-            if (!additionalProperties.containsKey(GENERATE_DATA_REPOSITORY)) {
-                additionalProperties.put(GENERATE_DATA_REPOSITORY, true);
-            } else {
-                additionalProperties.put(GENERATE_DATA_REPOSITORY, additionalProperties.get(GENERATE_DATA_REPOSITORY).equals("true"));
-            }
-        } else {
-            if (additionalProperties.containsKey(GENERATE_DATA_REPOSITORY)) {
-                additionalProperties.put(GENERATE_DATA_REPOSITORY, false);
-            }
-        }
-
         modelId = additionalProperties.get(REALM_PRIMARY_KEY).toString();
 
         supportingFiles.add(new SupportingFile("AuthenticationMethod.mustache", authFileFolder(), "AuthenticationMethod.swift"));
@@ -197,14 +182,13 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("String+URLEscapedString.mustache", utilFileFolder(), "String+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("Double+URLEscapedString.mustache", utilFileFolder(), "Double+URLEscapedString.swift"));
 
-        Boolean generateDataRepository = (Boolean) additionalProperties.get(GENERATE_DATA_REPOSITORY);
-        if (!generateDataRepository) {
-            repositoryTemplateFiles.clear();
-        } else {
-            supportingFiles.add(new SupportingFile("RealmManager.mustache", utilFileFolder(), "RealmManager.swift"));
-            supportingFiles.add(new SupportingFile("RepositoryError.mustache", utilFileFolder(), "RepositoryError.swift"));
-            supportingFiles.add(new SupportingFile("Query+toNSPredicate.mustache", utilFileFolder(), "Query+toNSPredicate.swift"));
-            supportingFiles.add(new SupportingFile("ConnectivityManager.mustache", utilFileFolder(), "ConnectivityManager.swift"));
+        Boolean useRealm = (Boolean) additionalProperties.get(USE_REALM);
+        if (useRealm) {
+            supportingFiles.add(new SupportingFile("RealmSynced.mustache", realmFileFolder(), "RealmSynced.swift"));
+            supportingFiles.add(new SupportingFile("RealmManager.mustache", realmFileFolder(), "RealmManager.swift"));
+            supportingFiles.add(new SupportingFile("RealmError.mustache", realmFileFolder(), "RealmError.swift"));
+            supportingFiles.add(new SupportingFile("Query+toNSPredicate.mustache", realmFileFolder(), "Query+toNSPredicate.swift"));
+            supportingFiles.add(new SupportingFile("ConnectivityManager.mustache", realmFileFolder(), "ConnectivityManager.swift"));
         }
 
         supportingFiles.add(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
@@ -224,11 +208,6 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     @Override
     public String apiFileFolder() {
         return getOutputFolder() + apiPackage().replace('.', File.separatorChar);
-    }
-
-    @Override
-    public String repositoryFileFolder() {
-        return getOutputFolder() + repositoryPackage.replace('.', File.separatorChar);
     }
 
     @Override
@@ -517,6 +496,10 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private String utilFileFolder() {
         return projectName + File.separator + "Util";
+    }
+
+    private String realmFileFolder() {
+        return projectName + File.separator + "Realm";
     }
 
     private String repositoriesFileFolder() { return projectName + File.separator + "Repositories"; }
