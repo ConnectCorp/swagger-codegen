@@ -191,6 +191,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             supportingFiles.add(new SupportingFile("RealmWrappers.mustache", realmFileFolder(), "RealmWrappers.swift"));
             supportingFiles.add(new SupportingFile("Query+toNSPredicate.mustache", realmFileFolder(), "Query+toNSPredicate.swift"));
             supportingFiles.add(new SupportingFile("ConnectivityManager.mustache", realmFileFolder(), "ConnectivityManager.swift"));
+
+            typeMapping.put("object", "NSData");
         }
 
         supportingFiles.add(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
@@ -237,6 +239,20 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
                     id.datatype = "Int";
                 }
             }
+
+            for (CodegenProperty var: model.vars) {
+                if (var.isRaw != null && var.isRaw) {
+                    model.rawVars.add(var);
+                }
+            }
+
+            int l = model.rawVars.size();
+            if (l > 0) {
+                for (int i = 0; i < l - 1; ++i) {
+                    model.rawVars.get(i).hasMoreRaw = true;
+                }
+                model.rawVars.get(l - 1).hasMoreRaw = false;
+            }
         }
 
         return objs;
@@ -251,6 +267,10 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
         if (property.datatype.equals("Int")) {
             property.isInteger = true;
+        }
+
+        if (property.datatype.equals("NSData")) {
+            property.isRaw = true;
         }
 
         property.isNumeric = isTrue(property.isInteger) || isTrue(property.isDouble)

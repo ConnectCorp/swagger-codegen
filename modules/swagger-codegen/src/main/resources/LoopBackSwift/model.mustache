@@ -10,8 +10,31 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable, CustomS
         case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
     }
 {{/isEnum}}{{/vars}}
-{{#vars}}{{#isEnum}}    public var {{name}}:{{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    {{#useRealm}}public{{^isNumeric}}{{^isListContainer}} dynamic{{/isListContainer}}{{/isNumeric}} var {{name}}{{#isNumeric}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/isNumeric}}{{^isNumeric}}{{#isListContainer}} = List<{{#items}}{{#isPrimitiveType}}Realm{{/isPrimitiveType}}{{datatype}}{{/items}}>(){{/isListContainer}}{{^isListContainer}}:{{{datatype}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isListContainer}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public var {{name}}:{{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}
-{{/vars}}
+{{#vars}}{{#isEnum}}    public var {{name}}:{{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    {{#useRealm}}{{#isRaw}}private{{/isRaw}}{{^isRaw}}public{{/isRaw}}{{^isNumeric}}{{^isListContainer}} dynamic{{/isListContainer}}{{/isNumeric}} var {{name}}{{#isRaw}}Data{{/isRaw}}{{#isNumeric}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/isNumeric}}{{^isNumeric}}{{#isListContainer}} = List<{{#items}}{{#isPrimitiveType}}Realm{{/isPrimitiveType}}{{datatype}}{{/items}}>(){{/isListContainer}}{{^isListContainer}}:{{{datatype}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isListContainer}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public var {{name}}:{{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}{{#hasMore}}
+{{/hasMore}}{{/vars}}{{#useRealm}}{{#rawVars}}
+
+    public var {{name}}:[String : AnyObject]? {
+        get {
+            guard let {{name}}Data = {{name}}Data else { return [:] }
+
+            do {
+                return try NSJSONSerialization.JSONObjectWithData({{name}}Data, options: NSJSONReadingOptions()) as? [String : AnyObject]
+            } catch {
+                return [:]
+            }
+        }
+
+        set {
+            guard let value = newValue else { {{name}}Data = nil ; return }
+
+            do {
+                {{name}}Data = try NSJSONSerialization.dataWithJSONObject(value, options: NSJSONWritingOptions())
+            } catch {
+                {{name}}Data = nil
+            }
+        }
+    }{{#hasMoreRaw}}
+    {{/hasMoreRaw}}{{/rawVars}}{{/useRealm}}
 
     public {{#useRealm}}override {{/useRealm}}var description: String {
         return "{{classname}}({{#vars}}\n    {{name}}: \({{name}}){{#hasMore}},{{/hasMore}}{{^hasMore}}\n{{/hasMore}}{{/vars}})"
@@ -19,7 +42,12 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable, CustomS
 
     public override static func primaryKey() -> String? {
         return "{{realmPrimaryKey}}"
-    }{{/hasId}}
+    }{{/hasId}}{{#hasRawVars}}
+
+    public override static func ignoredProperties() -> [String] {
+        return [{{#rawVars}}"{{name}}"{{#hasMoreRaw}}, {{/hasMoreRaw}}{{/rawVars}}]
+    }
+    {{/hasRawVars}}
 
     public required init() {
         super.init()

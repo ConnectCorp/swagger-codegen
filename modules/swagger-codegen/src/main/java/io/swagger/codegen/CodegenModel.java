@@ -11,6 +11,7 @@ public class CodegenModel {
     public String unescapedDescription;
     public String defaultValue;
     public List<CodegenProperty> vars = new ArrayList<CodegenProperty>();
+    public List<CodegenProperty> rawVars = new ArrayList<CodegenProperty>();
     public List<String> allowableValues;
 
     // list of all required parameters
@@ -44,5 +45,9 @@ public class CodegenModel {
         }
 
         return null;
+    }
+
+    public boolean hasRawVars() {
+        return !rawVars.isEmpty();
     }
 }
