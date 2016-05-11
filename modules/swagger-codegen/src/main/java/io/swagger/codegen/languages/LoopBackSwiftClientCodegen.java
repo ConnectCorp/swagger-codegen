@@ -4,9 +4,7 @@ import io.swagger.codegen.*;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
-import io.swagger.models.properties.Property;
+import io.swagger.models.properties.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 
@@ -40,6 +38,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     private static int anonymousApisCount = 0;
 
     private String modelId;
+
+    private boolean useRealm;
 
     @Override
     public CodegenType getTag() {
@@ -183,11 +183,12 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("Double+URLEscapedString.mustache", utilFileFolder(), "Double+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("NotSupportedOperation.mustache", utilFileFolder(), "NotSupportedOperation.swift"));
 
-        Boolean useRealm = (Boolean) additionalProperties.get(USE_REALM);
+        useRealm = (Boolean) additionalProperties.get(USE_REALM);
         if (useRealm) {
             supportingFiles.add(new SupportingFile("RealmSynced.mustache", realmFileFolder(), "RealmSynced.swift"));
             supportingFiles.add(new SupportingFile("RealmManager.mustache", realmFileFolder(), "RealmManager.swift"));
             supportingFiles.add(new SupportingFile("RealmError.mustache", realmFileFolder(), "RealmError.swift"));
+            supportingFiles.add(new SupportingFile("RealmWrappers.mustache", realmFileFolder(), "RealmWrappers.swift"));
             supportingFiles.add(new SupportingFile("Query+toNSPredicate.mustache", realmFileFolder(), "Query+toNSPredicate.swift"));
             supportingFiles.add(new SupportingFile("ConnectivityManager.mustache", realmFileFolder(), "ConnectivityManager.swift"));
         }

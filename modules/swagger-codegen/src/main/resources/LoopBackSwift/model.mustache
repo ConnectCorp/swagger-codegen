@@ -10,7 +10,7 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable, CustomS
         case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
     }
 {{/isEnum}}{{/vars}}
-{{#vars}}{{#isEnum}}    public var {{name}}:{{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    {{#useRealm}}public{{^isNumeric}} dynamic{{/isNumeric}} var {{name}}{{#isNumeric}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/isNumeric}}{{^isNumeric}}:{{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public var {{name}}:{{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}
+{{#vars}}{{#isEnum}}    public var {{name}}:{{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}    {{#useRealm}}public{{^isNumeric}}{{^isListContainer}} dynamic{{/isListContainer}}{{/isNumeric}} var {{name}}{{#isNumeric}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/isNumeric}}{{^isNumeric}}{{#isListContainer}} = List<{{#items}}{{#isPrimitiveType}}Realm{{/isPrimitiveType}}{{datatype}}{{/items}}>(){{/isListContainer}}{{^isListContainer}}:{{{datatype}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isListContainer}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public var {{name}}:{{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}
 {{/vars}}
 
     public {{#useRealm}}override {{/useRealm}}var description: String {
@@ -43,7 +43,16 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable, CustomS
     }
 
     public func mapping(map:Map) {
-        {{#vars}}{{name}} <- map["{{baseName}}"]{{#hasMore}}
+        {{#vars}}{{^useRealm}}{{name}} <- map["{{baseName}}"]{{/useRealm}}{{#useRealm}}{{^isListContainer}}{{name}} <- map["{{baseName}}"]{{/isListContainer}}{{#isListContainer}}{{#items}}{{^isPrimitiveType}}{{name}} <- map["{{baseName}}"]{{/isPrimitiveType}}{{#isPrimitiveType}}
+        var {{name}}:[{{datatype}}]? = nil
+        {{name}} <- map["{{baseName}}"]
+
+        {{name}}?.forEach { data in
+            let value = Realm{{datatype}}()
+            value.value = data
+            self.{{name}}.append(value)
+        }
+        {{/isPrimitiveType}}{{/items}}{{/isListContainer}}{{/useRealm}}{{#hasMore}}
         {{/hasMore}}{{/vars}}
     }
 }
