@@ -181,6 +181,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("RxAlamofireObjectMapping.mustache", utilFileFolder(), "RxAlamofireObjectMapping.swift"));
         supportingFiles.add(new SupportingFile("String+URLEscapedString.mustache", utilFileFolder(), "String+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("Double+URLEscapedString.mustache", utilFileFolder(), "Double+URLEscapedString.swift"));
+        supportingFiles.add(new SupportingFile("NotSupportedOperation.mustache", utilFileFolder(), "NotSupportedOperation.swift"));
 
         Boolean useRealm = (Boolean) additionalProperties.get(USE_REALM);
         if (useRealm) {
@@ -356,8 +357,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         }
 
         String resourcePath = "/" + operations.get(0).path.split("/")[1];
-        String countReturnType = "";
-        String deleteReturnType = "";
+        String countReturnType = "Int";
+        String deleteReturnType = "Bool";
 
         for (CodegenOperation operation: operations) {
             if (operation.path.equals(resourcePath)) {
@@ -377,11 +378,33 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
                 operation.successfulResponse.isListContainer = true;
             }
 
+            if (operation.operationId.equals("create")) {
+                api.put("hasCreate", true);
+            }
+
+            if (operation.operationId.equals("upsert")) {
+                api.put("hasUpsert", true);
+            }
+
+            if (operation.operationId.equals("findById")) {
+                api.put("hasFindById", true);
+            }
+
+            if (operation.operationId.equals("findOne")) {
+                api.put("hasFindOne", true);
+            }
+
+            if (operation.operationId.equals("find")) {
+                api.put("hasFind", true);
+            }
+
             if (operation.operationId.equals("count")) {
+                api.put("hasCount", true);
                 countReturnType = operation.successfulResponse.dataType;
             }
 
             if (operation.operationId.equals("deleteById")) {
+                api.put("hasDeleteById", true);
                 deleteReturnType = operation.successfulResponse.dataType;
             }
         }

@@ -47,6 +47,34 @@ import RxSwift
         )
     }{{#hasMore}}
     {{/hasMore}}
-{{/operation}}
+{{/operation}}{{^hasCreate}}
+    public func create(data:{{baseName}}) throws -> Observable<{{baseName}}> {
+        throw NotSupportedOperation()
+    }
+{{/hasCreate}}{{^hasUpsert}}
+    public func upsert(data:{{baseName}}) throws -> Observable<{{baseName}}> {
+        throw NotSupportedOperation()
+    }
+{{/hasUpsert}}{{^hasFindById}}
+    public func findById(id:String, filter:String) throws -> Observable<{{baseName}}> {
+        throw NotSupportedOperation()
+    }
+{{/hasFindById}}{{^hasFindOne}}
+    public func findOne(filter:String) throws -> Observable<{{baseName}}> {
+        throw NotSupportedOperation()
+    }
+{{/hasFindOne}}{{^hasFind}}
+    public func find(filter:String) throws -> Observable<[{{baseName}}]> {
+        throw NotSupportedOperation()
+    }
+{{/hasFind}}{{^hasCount}}
+    public func count(filter:String) throws -> Observable<{{countReturnType}}> {
+        throw NotSupportedOperation()
+    }
+{{/hasCount}}{{^hasDeleteById}}
+    public func deleteById(id:String) throws -> Observable<{{deleteReturnType}}> {
+        throw NotSupportedOperation()
+    }
+{{/hasDeleteById}}
 }
 {{/operations}}
