@@ -9,7 +9,11 @@ Pod::Spec.new do |s|
     s.source = { :git => '{{projectSource}}'{{#projectVersion}}, :tag => '{{projectVersion}}'{{/projectVersion}} }{{/projectSource}}{{#projectLicense}}
     s.license = { :type => '{{projectLicense}}', :file => 'LICENSE' }{{/projectLicense}}
     s.source_files = '{{projectName}}/**/*.swift'
-    s.dependency 'Alamofire'{{#useRealm}}
-    s.dependency 'RealmSwift'{{/useRealm}}{{#generateDataRepository}}
-    s.dependency 'LoopBackQuery'{{/generateDataRepository}}
+    s.dependency 'RxSwift'
+    s.dependency 'ObjectMapper'
+    s.dependency 'Alamofire'
+    s.dependency 'AlamofireObjectMapper'
+    s.dependency 'RxAlamofire'{{#useRealm}}
+    s.dependency 'RealmSwift'{{/useRealm}}{{#syncWithRealm}}
+    s.dependency 'LoopBackQuery'{{/syncWithRealm}}
 end

@@ -19,7 +19,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private static final String REALM_PRIMARY_KEY = "realmPrimaryKey";
 
-    private static final String GENERATE_DATA_REPOSITORY = "generateDataRepository";
+    private static final String SYNC_WITH_REALM = "syncWithRealm";
 
     private static final String PROJECT_NAME = "projectName";
 
@@ -39,7 +39,9 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private String modelId;
 
-    private boolean useRealm;
+    private boolean useRealm = false;
+
+    private boolean syncWithRealm = false;
 
     @Override
     public CodegenType getTag() {
@@ -170,21 +172,32 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             additionalProperties.put(PROJECT_LICENSE, "The MIT License (MIT)");
         }
 
+        useRealm = (Boolean) additionalProperties.get(USE_REALM);
+        if (useRealm) {
+            if (!additionalProperties.containsKey(SYNC_WITH_REALM)) {
+                additionalProperties.put(SYNC_WITH_REALM, false);
+            } else {
+                additionalProperties.put(SYNC_WITH_REALM, additionalProperties.get(SYNC_WITH_REALM).equals("true"));
+            }
+
+            syncWithRealm = (Boolean) additionalProperties.get(USE_REALM);
+        }
+
         modelId = additionalProperties.get(REALM_PRIMARY_KEY).toString();
 
         supportingFiles.add(new SupportingFile("AuthenticationMethod.mustache", authFileFolder(), "AuthenticationMethod.swift"));
         supportingFiles.add(new SupportingFile("APIKey.mustache", authFileFolder(), "APIKey.swift"));
         supportingFiles.add(new SupportingFile("RequestAuthenticator.mustache", authFileFolder(), "RequestAuthenticator.swift"));
-
         supportingFiles.add(new SupportingFile("BaseAPI.mustache", utilFileFolder(), "API.swift"));
         supportingFiles.add(new SupportingFile("APIError.mustache", utilFileFolder(), "APIError.swift"));
         supportingFiles.add(new SupportingFile("RxAlamofireObjectMapping.mustache", utilFileFolder(), "RxAlamofireObjectMapping.swift"));
         supportingFiles.add(new SupportingFile("String+URLEscapedString.mustache", utilFileFolder(), "String+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("Double+URLEscapedString.mustache", utilFileFolder(), "Double+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("NotSupportedOperation.mustache", utilFileFolder(), "NotSupportedOperation.swift"));
+        supportingFiles.add(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
+        supportingFiles.add(new SupportingFile("LICENSE.mustache", "", "LICENSE"));
 
-        useRealm = (Boolean) additionalProperties.get(USE_REALM);
-        if (useRealm) {
+        if (syncWithRealm) {
             supportingFiles.add(new SupportingFile("RealmSynced.mustache", realmFileFolder(), "RealmSynced.swift"));
             supportingFiles.add(new SupportingFile("RealmManager.mustache", realmFileFolder(), "RealmManager.swift"));
             supportingFiles.add(new SupportingFile("RealmError.mustache", realmFileFolder(), "RealmError.swift"));
@@ -194,9 +207,6 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
             typeMapping.put("object", "NSData");
         }
-
-        supportingFiles.add(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
-        supportingFiles.add(new SupportingFile("LICENSE.mustache", "", "LICENSE"));
     }
 
     @Override

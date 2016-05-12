@@ -1,10 +1,10 @@
 import Alamofire
 import RxSwift
 
-{{#operations}}public class {{classname}} : API { {{#generateDataRepository}}
+{{#operations}}public class {{classname}} : API { {{#syncWithRealm}}
     public typealias ModelType = {{baseName}}
     public typealias CountType = {{countReturnType}}
-    public typealias DeleteType = {{deleteReturnType}}{{/generateDataRepository}}
+    public typealias DeleteType = {{deleteReturnType}}{{/syncWithRealm}}
 
     let authenticator = RequestAuthenticator()
 
@@ -47,7 +47,7 @@ import RxSwift
         )
     }{{#hasMore}}
     {{/hasMore}}
-{{/operation}}{{^hasCreate}}
+{{/operation}}{{#syncWithRealm}}{{^hasCreate}}
     public func create(data:{{baseName}}) throws -> Observable<{{baseName}}> {
         throw NotSupportedOperation()
     }
@@ -75,6 +75,6 @@ import RxSwift
     public func deleteById(id:String) throws -> Observable<{{deleteReturnType}}> {
         throw NotSupportedOperation()
     }
-{{/hasDeleteById}}
+{{/hasDeleteById}}{{/syncWithRealm}}
 }
 {{/operations}}

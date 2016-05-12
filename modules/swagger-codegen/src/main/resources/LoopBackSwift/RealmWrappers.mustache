@@ -6,17 +6,17 @@ public class RealmString : Object {
 }
 
 public class RealmInt : Object {
-    public dynamic var value:Int? = nil
+    public var value = RealmOptional<Int>(nil)
 }
 
 public class RealmFloat : Object {
-    public dynamic var value:Float? = nil
+    public var value = RealmOptional<Float>(nil)
 }
 
 public class RealmDouble : Object {
-    public dynamic var value:Double? = nil
+    public var value = RealmOptional<Double>(nil)
 }
 
 public class RealmBool : Object {
-    public dynamic var value:Bool? = nil
+    public var value = RealmOptional<Bool>(nil)
 }
