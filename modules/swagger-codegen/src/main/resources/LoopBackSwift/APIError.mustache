@@ -1,0 +1,21 @@
+import Foundation
+import Alamofire
+
+public class APIError : ErrorType, CustomStringConvertible {
+
+    public var request:Request? = nil
+
+    public var statusCode:Int?
+
+    public var errorResponse:String? = nil
+
+    public var description:String {
+        return "APIError(statusCode=\(statusCode), errorResponse=\(errorResponse)"
+    }
+
+    public init(request:Request? = nil, statusCode:Int? = nil, errorResponse:String? = nil) {
+        self.request = request
+        self.statusCode = statusCode
+        self.errorResponse = errorResponse
+    }
+}
