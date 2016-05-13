@@ -81,6 +81,7 @@ public class DefaultCodegen {
     protected String library;
     protected Boolean sortParamsByRequiredFlag = true;
     protected Boolean ensureUniqueParams = true;
+    protected Map<String, String> topLevelTemplateFiles = new HashMap<String, String>();
 
     public List<CliOption> cliOptions() {
         return cliOptions;
@@ -242,6 +243,14 @@ public class DefaultCodegen {
 
     public Map<String, String> modelTemplateFiles() {
         return modelTemplateFiles;
+    }
+
+    public Map<String, String> topLevelAPITemplateFiles() {
+        return topLevelTemplateFiles;
+    }
+
+    public String topLevelAPIFileFolder() {
+        return outputFolder;
     }
 
     public String apiFileFolder() {
@@ -2177,6 +2186,11 @@ public class DefaultCodegen {
     public String apiFilename(String templateName, String tag) {
         String suffix = apiTemplateFiles().get(templateName);
         return apiFileFolder() + '/' + toApiFilename(tag) + suffix;
+    }
+
+    public String topLevelAPIFilename(String templateName) {
+        String suffix = topLevelAPITemplateFiles().get(templateName);
+        return topLevelAPIFileFolder() + "/TopLevelAPI" + suffix;
     }
 
     /**

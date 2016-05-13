@@ -64,6 +64,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         outputFolder = "generated-code" + File.separator + NAME;
         modelTemplateFiles.put("model.mustache", ".swift");
         apiTemplateFiles.put("api.mustache", ".swift");
+        topLevelTemplateFiles.put("LoopBackAPI.mustache", ".swift");
 
         embeddedTemplateDir = templateDir = NAME;
         apiPackage = File.separator + "APIs";
@@ -222,6 +223,17 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     @Override
     public String apiFileFolder() {
         return getOutputFolder() + apiPackage().replace('.', File.separatorChar);
+    }
+
+    @Override
+    public String topLevelAPIFileFolder() {
+        return getOutputFolder();
+    }
+
+    @Override
+    public String topLevelAPIFilename(String templateName) {
+        String suffix = topLevelAPITemplateFiles().get(templateName);
+        return topLevelAPIFileFolder() + "/LoopBackAPI" + suffix;
     }
 
     @Override
