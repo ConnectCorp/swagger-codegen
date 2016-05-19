@@ -7,6 +7,7 @@ import io.swagger.models.Swagger;
 import io.swagger.models.properties.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.joda.time.DateTime;
 
 import java.io.File;
 import java.util.*;
@@ -19,7 +20,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private static final String REALM_PRIMARY_KEY = "realmPrimaryKey";
 
-    private static final String SYNC_WITH_REALM = "syncWithRealm";
+    private static final String GENERATE_TOP_LEVEL_API = "generateTopLevelAPI";
 
     private static final String PROJECT_NAME = "projectName";
 
@@ -41,7 +42,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     private boolean useRealm = false;
 
-    private boolean syncWithRealm = false;
+    private boolean generateTopLevelAPI = false;
 
     @Override
     public CodegenType getTag() {
@@ -64,7 +65,6 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         outputFolder = "generated-code" + File.separator + NAME;
         modelTemplateFiles.put("model.mustache", ".swift");
         apiTemplateFiles.put("api.mustache", ".swift");
-        topLevelTemplateFiles.put("LoopBackAPI.mustache", ".swift");
 
         embeddedTemplateDir = templateDir = NAME;
         apiPackage = File.separator + "APIs";
@@ -138,7 +138,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         typeMapping.put("integer", "Int");
         typeMapping.put("Integer", "Int");
         typeMapping.put("float", "Float");
-        typeMapping.put("number", "Double");
+        typeMapping.put("number", "Int");
         typeMapping.put("double", "Double");
         typeMapping.put("object", "AnyObject");
         typeMapping.put("file", "NSURL");
@@ -175,13 +175,13 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
         useRealm = (Boolean) additionalProperties.get(USE_REALM);
         if (useRealm) {
-            if (!additionalProperties.containsKey(SYNC_WITH_REALM)) {
-                additionalProperties.put(SYNC_WITH_REALM, false);
+            if (!additionalProperties.containsKey(GENERATE_TOP_LEVEL_API)) {
+                additionalProperties.put(GENERATE_TOP_LEVEL_API, false);
             } else {
-                additionalProperties.put(SYNC_WITH_REALM, additionalProperties.get(SYNC_WITH_REALM).equals("true"));
+                additionalProperties.put(GENERATE_TOP_LEVEL_API, additionalProperties.get(GENERATE_TOP_LEVEL_API).equals("true"));
             }
 
-            syncWithRealm = (Boolean) additionalProperties.get(USE_REALM);
+            generateTopLevelAPI = (Boolean) additionalProperties.get(USE_REALM);
         }
 
         modelId = additionalProperties.get(REALM_PRIMARY_KEY).toString();
@@ -194,19 +194,20 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("RxAlamofireObjectMapping.mustache", utilFileFolder(), "RxAlamofireObjectMapping.swift"));
         supportingFiles.add(new SupportingFile("String+URLEscapedString.mustache", utilFileFolder(), "String+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("Double+URLEscapedString.mustache", utilFileFolder(), "Double+URLEscapedString.swift"));
-        supportingFiles.add(new SupportingFile("NotSupportedOperation.mustache", utilFileFolder(), "NotSupportedOperation.swift"));
         supportingFiles.add(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
         supportingFiles.add(new SupportingFile("LICENSE.mustache", "", "LICENSE"));
 
-        if (syncWithRealm) {
-            supportingFiles.add(new SupportingFile("RealmSynced.mustache", realmFileFolder(), "RealmSynced.swift"));
-            supportingFiles.add(new SupportingFile("RealmManager.mustache", realmFileFolder(), "RealmManager.swift"));
-            supportingFiles.add(new SupportingFile("RealmError.mustache", realmFileFolder(), "RealmError.swift"));
+        if (useRealm) {
             supportingFiles.add(new SupportingFile("RealmWrappers.mustache", realmFileFolder(), "RealmWrappers.swift"));
-            supportingFiles.add(new SupportingFile("Query+toNSPredicate.mustache", realmFileFolder(), "Query+toNSPredicate.swift"));
-            supportingFiles.add(new SupportingFile("ConnectivityManager.mustache", realmFileFolder(), "ConnectivityManager.swift"));
 
             typeMapping.put("object", "NSData");
+        }
+
+        if (generateTopLevelAPI) {
+            topLevelTemplateFiles.put("LoopBackAPI.mustache", ".swift");
+
+            supportingFiles.add(new SupportingFile("UnsupportedOperation.mustache", utilFileFolder(), "UnsupportedOperation.swift"));
+            supportingFiles.add(new SupportingFile("UnsupportedModelType.mustache", utilFileFolder(), "UnsupportedModelType.swift"));
         }
     }
 
@@ -298,6 +299,10 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         property.isNumeric = isTrue(property.isInteger) || isTrue(property.isDouble)
                 || isTrue(property.isFloat) || isTrue(property.isLong)
                 || isTrue(property.isBoolean);
+
+        if (useRealm && property.name.equals(modelId)) {
+            property.required = true;
+        }
     }
 
     @Override
@@ -330,6 +335,30 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     @Override
     public String toDefaultValue(Property property) {
+        if (!property.getRequired()) {
+            return "nil";
+        }
+
+        if (property instanceof AbstractNumericProperty) {
+            return "0";
+        }
+
+        if (property instanceof BooleanProperty) {
+            return "false";
+        }
+
+        if (property instanceof StringProperty) {
+            return "\"\"";
+        }
+
+        if (property instanceof ArrayProperty) {
+            return "[:]";
+        }
+
+        if (property instanceof MapProperty) {
+            return "[:]";
+        }
+
         return "nil";
     }
 
@@ -356,6 +385,11 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
         if (property.isEnum) {
             handleEnumProperty(name, property);
+        }
+
+        if (useRealm && property.name.equals(modelId)) {
+            property.required = true;
+            property.defaultValue = "0";
         }
 
         return property;
@@ -546,6 +580,41 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         builder.append(after);
 
         return builder.toString();
+    }
+
+    private String getDefaultValue(CodegenProperty property) {
+        if (property.required == null) {
+            return "nil";
+        }
+
+        if (!property.required) {
+            return "nil";
+        }
+
+        String type = property.datatype;
+
+        if (type.equals("Int") || type.equals("Double")
+                || type.equals("Float")) {
+            return "0";
+        }
+
+        if (type.equals("Bool")) {
+            return "false";
+        }
+
+        if (type.equals("String")) {
+            return "\"\"";
+        }
+
+        if (property.isListContainer != null && property.isListContainer) {
+            return "[:]";
+        }
+
+        if (property.isMapContainer != null && property.isMapContainer) {
+            return "[:]";
+        }
+
+        return "nil";
     }
 
     private String normalizeExampleString(String str) {

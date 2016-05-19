@@ -1,10 +1,10 @@
 import Alamofire
 import RxSwift
 
-{{#operations}}public class {{classname}} : API { {{#syncWithRealm}}
+{{#operations}}public class {{classname}} : API { {{#generateTopLevelAPI}}
     public typealias ModelType = {{baseName}}
     public typealias CountType = {{countReturnType}}
-    public typealias DeleteType = {{deleteReturnType}}{{/syncWithRealm}}
+    public typealias DeleteType = {{deleteReturnType}}{{/generateTopLevelAPI}}
 
     let authenticator = RequestAuthenticator()
 
@@ -47,34 +47,34 @@ import RxSwift
         )
     }{{#hasMore}}
     {{/hasMore}}
-{{/operation}}{{#syncWithRealm}}{{^hasCreate}}
+{{/operation}}{{#generateTopLevelAPI}}{{^hasCreate}}
     public func create(data:{{baseName}}) throws -> Observable<{{baseName}}> {
-        throw NotSupportedOperation()
+        throw UnsupportedOperation()
     }
 {{/hasCreate}}{{^hasUpsert}}
     public func upsert(data:{{baseName}}) throws -> Observable<{{baseName}}> {
-        throw NotSupportedOperation()
+        throw UnsupportedOperation()
     }
 {{/hasUpsert}}{{^hasFindById}}
     public func findById(id:String, filter:String) throws -> Observable<{{baseName}}> {
-        throw NotSupportedOperation()
+        throw UnsupportedOperation()
     }
 {{/hasFindById}}{{^hasFindOne}}
     public func findOne(filter:String) throws -> Observable<{{baseName}}> {
-        throw NotSupportedOperation()
+        throw UnsupportedOperation()
     }
 {{/hasFindOne}}{{^hasFind}}
     public func find(filter:String) throws -> Observable<[{{baseName}}]> {
-        throw NotSupportedOperation()
+        throw UnsupportedOperation()
     }
 {{/hasFind}}{{^hasCount}}
     public func count(filter:String) throws -> Observable<{{countReturnType}}> {
-        throw NotSupportedOperation()
+        throw UnsupportedOperation()
     }
 {{/hasCount}}{{^hasDeleteById}}
     public func deleteById(id:String) throws -> Observable<{{deleteReturnType}}> {
-        throw NotSupportedOperation()
+        throw UnsupportedOperation()
     }
-{{/hasDeleteById}}{{/syncWithRealm}}
+{{/hasDeleteById}}{{/generateTopLevelAPI}}
 }
 {{/operations}}

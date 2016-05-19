@@ -4,12 +4,12 @@ import Realm
 import RealmSwift
 {{/useRealm}}
 
-public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable, CustomStringConvertible { {{#vars}}{{#isEnum}}
+public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable { {{#vars}}{{#isEnum}}
     public enum {{datatypeWithEnum}} : String { {{#allowableValues}}{{#values}}
         case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
     }
 {{/isEnum}}{{/vars}}{{#vars}}
-    {{#isEnum}}public var {{name}}:{{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}{{#useRealm}}{{#isRaw}}private{{/isRaw}}{{^isRaw}}public{{/isRaw}}{{^isNumeric}}{{^isListContainer}} dynamic{{/isListContainer}}{{/isNumeric}} var {{name}}{{#isRaw}}Data{{/isRaw}}{{#isNumeric}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/isNumeric}}{{^isNumeric}}{{#isListContainer}} = List<{{#items}}{{#isPrimitiveType}}Realm{{/isPrimitiveType}}{{datatype}}{{/items}}>(){{/isListContainer}}{{^isListContainer}}:{{{datatype}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isListContainer}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public var {{name}}:{{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}{{#hasMore}}
+    {{#isEnum}}public var {{name}}:{{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}{{#useRealm}}{{#isRaw}}private{{/isRaw}}{{^isRaw}}public{{/isRaw}}{{^isNumeric}}{{^isListContainer}} dynamic{{/isListContainer}}{{/isNumeric}} var {{name}}{{#isRaw}}Data{{/isRaw}}{{#isNumeric}}{{#required}}:{{datatype}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/required}}{{^required}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/required}}{{/isNumeric}}{{^isNumeric}}{{#isListContainer}} = List<{{#items}}{{#isPrimitiveType}}Realm{{/isPrimitiveType}}{{datatype}}{{/items}}>(){{/isListContainer}}{{^isListContainer}}:{{{datatype}}}{{^required}}?{{/required}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isListContainer}}{{/isNumeric}}{{/useRealm}}{{^useRealm}}public var {{name}}:{{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/useRealm}}{{/isEnum}}{{#hasMore}}
 {{/hasMore}}{{/vars}}{{#useRealm}}{{#rawVars}}
 
     public var {{name}}:[String : AnyObject]? {

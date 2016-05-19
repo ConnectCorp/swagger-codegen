@@ -19,7 +19,7 @@ public class LoopBackAPI {
         {{/hasMore}}{{/apis}}
 
         return Observable.create {
-            $0.onError(Error.errorWithCode(0, failureReason: "Unsupported data type"))
+            $0.onError(UnsupportedModelType())
 
             return NopDisposable.instance
         }
@@ -27,83 +27,83 @@ public class LoopBackAPI {
 
     public func update<ModelType>(data:ModelType) throws -> Observable<ModelType> {
         {{#apis}}if data is {{modelClassName}} {
-            return try {{apiVarName}}Api.update(data as! {{modelClassName}}).flatMap { return Observable.just($0 as! ModelType) }
+            return try {{apiVarName}}Api.upsert(data as! {{modelClassName}}).flatMap { return Observable.just($0 as! ModelType) }
         }{{#hasMore}}
 
         {{/hasMore}}{{/apis}}
 
         return Observable.create {
-            $0.onError(Error.errorWithCode(0, failureReason: "Unsupported data type"))
+            $0.onError(UnsupportedModelType())
 
             return NopDisposable.instance
         }
     }
 
     public func findById<ModelType>(type:ModelType.Type, id:String, filter:String) throws -> Observable<ModelType> {
-        {{#apis}}if type == {{modelClassName}}.self {
+        {{#apis}}if type.self == {{modelClassName}}.self {
             return try {{apiVarName}}Api.findById(id, filter: filter).flatMap { return Observable.just($0 as! ModelType) }
         }{{#hasMore}}
 
         {{/hasMore}}{{/apis}}
 
         return Observable.create {
-            $0.onError(Error.errorWithCode(0, failureReason: "Unsupported data type"))
+            $0.onError(UnsupportedModelType())
 
             return NopDisposable.instance
         }
     }
 
     public func findOne<ModelType>(type:ModelType.Type, filter:String) throws -> Observable<ModelType> {
-        {{#apis}}if type == {{modelClassName}}.self {
-            return try {{apiVarName}}Api.findOne(filter: filter).flatMap { return Observable.just($0 as! ModelType) }
+        {{#apis}}if type.self == {{modelClassName}}.self {
+            return try {{apiVarName}}Api.findOne(filter).flatMap { return Observable.just($0 as! ModelType) }
         }{{#hasMore}}
 
         {{/hasMore}}{{/apis}}
 
         return Observable.create {
-            $0.onError(Error.errorWithCode(0, failureReason: "Unsupported data type"))
+            $0.onError(UnsupportedModelType())
 
             return NopDisposable.instance
         }
     }
 
     public func find<ModelType>(type:ModelType.Type, filter:String) throws -> Observable<[ModelType]> {
-        {{#apis}}if type == {{modelClassName}}.self {
-            return try {{apiVarName}}Api.find(filter: filter).flatMap { return Observable.just($0.map({ return $0 as! ModelType })) }
+        {{#apis}}if type.self == {{modelClassName}}.self {
+            return try {{apiVarName}}Api.find(filter).flatMap { return Observable.just($0.map({ return $0 as! ModelType })) }
         }{{#hasMore}}
 
         {{/hasMore}}{{/apis}}
 
         return Observable.create {
-            $0.onError(Error.errorWithCode(0, failureReason: "Unsupported data type"))
+            $0.onError(UnsupportedModelType())
 
             return NopDisposable.instance
         }
     }
 
     public func count<ModelType, CountType>(type:ModelType.Type, _where:String) throws -> Observable<CountType> {
-        {{#apis}}if type == {{modelClassName}}.self {
+        {{#apis}}if type.self == {{modelClassName}}.self {
             return try {{apiVarName}}Api.count(_where).flatMap { return Observable.just($0 as! CountType) }
         }{{#hasMore}}
 
         {{/hasMore}}{{/apis}}
 
         return Observable.create {
-            $0.onError(Error.errorWithCode(0, failureReason: "Unsupported data type"))
+            $0.onError(UnsupportedModelType())
 
             return NopDisposable.instance
         }
     }
 
     public func deleteById<ModelType, DeleteType>(type:ModelType.Type, id:String) throws -> Observable<DeleteType> {
-        {{#apis}}if type == {{modelClassName}}.self {
+        {{#apis}}if type.self == {{modelClassName}}.self {
             return try {{apiVarName}}Api.deleteById(id).flatMap { return Observable.just($0 as! DeleteType) }
         }{{#hasMore}}
 
         {{/hasMore}}{{/apis}}
 
         return Observable.create {
-            $0.onError(Error.errorWithCode(0, failureReason: "Unsupported data type"))
+            $0.onError(UnsupportedModelType())
 
             return NopDisposable.instance
         }

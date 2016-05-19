@@ -60,16 +60,16 @@ public struct Parameters {
 
 public typealias JSONBodyBuilderClosure = () -> [String:AnyObject]
 
-public protocol API { {{#syncWithRealm}}
+public protocol API { {{#generateTopLevelAPI}}
     associatedtype ModelType
     associatedtype CountType
-    associatedtype DeleteType{{/syncWithRealm}}
+    associatedtype DeleteType{{/generateTopLevelAPI}}
 
     var manager:Manager { get }
 
     var baseURL:NSURL { get }
 
-    var resourcePath:String? { get }{{#syncWithRealm}}
+    var resourcePath:String? { get }{{#generateTopLevelAPI}}
 
     func create(data:ModelType) throws -> Observable<ModelType>
 
@@ -83,7 +83,7 @@ public protocol API { {{#syncWithRealm}}
 
     func count(_where:String) throws -> Observable<CountType>
 
-    func deleteById(id:String) throws -> Observable<DeleteType>{{/syncWithRealm}}
+    func deleteById(id:String) throws -> Observable<DeleteType>{{/generateTopLevelAPI}}
 }
 
 extension API {
