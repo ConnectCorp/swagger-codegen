@@ -10,6 +10,8 @@ Pod::Spec.new do |s|
     s.license = { :type => '{{projectLicense}}', :file => 'LICENSE' }{{/projectLicense}}
     s.source_files = '{{projectName}}/**/*.swift'
     s.dependency 'RxSwift'
+    s.dependency 'RxCocoa'
+    s.dependency 'NSObject+Rx'
     s.dependency 'ObjectMapper'
     s.dependency 'Alamofire'
     s.dependency 'AlamofireObjectMapper'

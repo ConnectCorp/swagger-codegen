@@ -6,8 +6,8 @@ public class LoopBackAPI {
     {{#apis}}public let {{apiVarName}}Api:{{apiClassName}}{{#hasMore}}
     {{/hasMore}}{{/apis}}
 
-    public init(manager:Manager) {
-        {{#apis}}{{apiVarName}}Api = {{apiClassName}}(manager: manager){{#hasMore}}
+    public init(manager:Manager, baseURL:Observable<NSURL>) {
+        {{#apis}}{{apiVarName}}Api = {{apiClassName}}(manager: manager, baseURL: baseURL){{#hasMore}}
         {{/hasMore}}{{/apis}}
     }
 

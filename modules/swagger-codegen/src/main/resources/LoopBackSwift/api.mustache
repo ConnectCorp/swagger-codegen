@@ -1,21 +1,28 @@
 import Alamofire
 import RxSwift
 
-{{#operations}}public class {{classname}} : API { {{#generateTopLevelAPI}}
+{{#operations}}public class {{classname}} : NSObject, API { {{#generateTopLevelAPI}}
     public typealias ModelType = {{baseName}}
     public typealias CountType = {{countReturnType}}
     public typealias DeleteType = {{deleteReturnType}}{{/generateTopLevelAPI}}
 
     let authenticator = RequestAuthenticator()
 
+    let baseURLSubject:Variable<NSURL>
+
     public let manager:Manager
 
-    public init(manager:Manager) {
-        self.manager = manager
+    public var baseURL:NSURL {
+        return baseURLSubject.value
     }
 
-    public var baseURL:NSURL {
-        return NSURL(string: "{{basePath}}")!
+    public init(manager:Manager, baseURL:Observable<NSURL>, initialBaseURL:NSURL = NSURL(string: "http://google.com")!) {
+        self.manager = manager
+        self.baseURLSubject = Variable(initialBaseURL)
+
+        super.init()
+
+        baseURL.bindTo(baseURLSubject).addDisposableTo(rx_disposeBag)
     }
 
     public var resourcePath:String? {
