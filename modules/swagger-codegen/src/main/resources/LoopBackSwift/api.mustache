@@ -3,7 +3,7 @@ import NSObject_Rx
 import RxCocoa
 import RxSwift
 
-{{#operations}}public class {{classname}} : NSObject, API { {{#generateTopLevelAPI}}
+{{#operations}}public class {{classname}} : NSObject, {{#generateTopLevelAPI}}CRUD{{/generateTopLevelAPI}}API { {{#generateTopLevelAPI}}
     public typealias ModelType = {{baseName}}
     public typealias CountType = {{countReturnType}}
     public typealias DeleteType = {{deleteReturnType}}{{/generateTopLevelAPI}}

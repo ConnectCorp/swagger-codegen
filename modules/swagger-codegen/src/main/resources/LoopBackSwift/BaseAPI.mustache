@@ -60,16 +60,18 @@ public struct Parameters {
 
 public typealias JSONBodyBuilderClosure = () -> [String:AnyObject]
 
-public protocol API { {{#generateTopLevelAPI}}
-    associatedtype ModelType
-    associatedtype CountType
-    associatedtype DeleteType{{/generateTopLevelAPI}}
-
+public protocol API {
     var manager:Manager { get }
 
     var baseURL:NSURL { get }
 
-    var resourcePath:String? { get }{{#generateTopLevelAPI}}
+    var resourcePath:String? { get }
+}
+
+public protocol CRUDAPI : API {
+    associatedtype ModelType
+    associatedtype CountType
+    associatedtype DeleteType
 
     func create(data:ModelType) throws -> Observable<ModelType>
 
@@ -83,7 +85,7 @@ public protocol API { {{#generateTopLevelAPI}}
 
     func count(_where:String) throws -> Observable<CountType>
 
-    func deleteById(id:String) throws -> Observable<DeleteType>{{/generateTopLevelAPI}}
+    func deleteById(id:String) throws -> Observable<DeleteType>
 }
 
 extension API {

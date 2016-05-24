@@ -1,0 +1,19 @@
+import Foundation
+
+extension Double {
+    public var URLEscapedString:String {
+        return String(format: "%.0f", self)
+    }
+}
+
+extension Int {
+    public var URLEscapedString:String {
+        return self.description
+    }
+}
+
+extension String {
+    public var URLEscapedString:String {
+        return self.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet())!
+    }
+}

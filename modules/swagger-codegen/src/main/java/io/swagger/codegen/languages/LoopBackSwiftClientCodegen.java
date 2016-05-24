@@ -192,8 +192,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("BaseAPI.mustache", utilFileFolder(), "API.swift"));
         supportingFiles.add(new SupportingFile("APIError.mustache", utilFileFolder(), "APIError.swift"));
         supportingFiles.add(new SupportingFile("RxAlamofireObjectMapping.mustache", utilFileFolder(), "RxAlamofireObjectMapping.swift"));
-        supportingFiles.add(new SupportingFile("String+URLEscapedString.mustache", utilFileFolder(), "String+URLEscapedString.swift"));
-        supportingFiles.add(new SupportingFile("Double+URLEscapedString.mustache", utilFileFolder(), "Double+URLEscapedString.swift"));
+        supportingFiles.add(new SupportingFile("Primitives+URLEscapedString.mustache", utilFileFolder(), "Primitives+URLEscapedString.swift"));
         supportingFiles.add(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
         supportingFiles.add(new SupportingFile("LICENSE.mustache", "", "LICENSE"));
 
@@ -204,7 +203,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         }
 
         if (generateTopLevelAPI) {
-            topLevelTemplateFiles.put("LoopBackAPI.mustache", ".swift");
+            topLevelTemplateFiles.put("DataAPI.mustache", ".swift");
 
             supportingFiles.add(new SupportingFile("UnsupportedOperation.mustache", utilFileFolder(), "UnsupportedOperation.swift"));
             supportingFiles.add(new SupportingFile("UnsupportedModelType.mustache", utilFileFolder(), "UnsupportedModelType.swift"));
@@ -234,7 +233,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
     @Override
     public String topLevelAPIFilename(String templateName) {
         String suffix = topLevelAPITemplateFiles().get(templateName);
-        return topLevelAPIFileFolder() + "/LoopBackAPI" + suffix;
+        return topLevelAPIFileFolder() + "/DataAPI" + suffix;
     }
 
     @Override

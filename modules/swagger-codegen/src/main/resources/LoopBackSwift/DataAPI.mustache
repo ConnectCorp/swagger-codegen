@@ -2,7 +2,7 @@ import Foundation
 import Alamofire
 import RxSwift
 
-public class LoopBackAPI {
+public class DataAPI {
     {{#apis}}public let {{apiVarName}}Api:{{apiClassName}}{{#hasMore}}
     {{/hasMore}}{{/apis}}
 
