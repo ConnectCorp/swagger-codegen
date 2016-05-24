@@ -301,7 +301,7 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
                     operation.put("classname", config.toApiName(tag));
                     operation.put("classVarName", config.toApiVarName(tag));
                     operation.put("importPath", config.toApiImport(tag));
-                    
+
                     if(!config.vendorExtensions().isEmpty()) {
                     	operation.put("vendorExtensions", config.vendorExtensions());
                     }
@@ -373,7 +373,56 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
                     throw new RuntimeException("Could not generate api file for '" + tag + "'", e);
                 }
             }
+
+            // Generate top level API files.
+            Map<String, List<GeneratedAPI>> topLevelAPI = new HashMap<String, List<GeneratedAPI>>();
+
+            List<GeneratedAPI> apis = new ArrayList<GeneratedAPI>();
+
+            for (String model: paths.keySet()) {
+                GeneratedAPI api = new GeneratedAPI();
+                api.modelClassName = model;
+                api.apiClassName = config.toApiName(model);
+                api.apiVarName = config.toApiVarName(model);
+                api.hasMore = true;
+                apis.add(api);
+            }
+
+            int size = apis.size();
+            if (size > 0) {
+                apis.get(size - 1).hasMore = false;
+            }
+
+            topLevelAPI.put("apis", apis);
+
+            for (String templateName: config.topLevelAPITemplateFiles().keySet()) {
+                String filename = config.topLevelAPIFilename(templateName);
+
+                if (!config.shouldOverwrite(filename) && new File(filename).exists()) {
+                    continue;
+                }
+
+                try {
+                    String templateFile = getFullTemplateFile(config, templateName);
+                    String template = readTemplate(templateFile);
+                    Template tmpl = Mustache.compiler()
+                            .withLoader(new Mustache.TemplateLoader() {
+                                @Override
+                                public Reader getTemplate(String name) {
+                                    return getTemplateReader(getFullTemplateFile(config, name + ".mustache"));
+                                }
+                            })
+                            .defaultValue("")
+                            .compile(template);
+
+                    writeToFile(filename, tmpl.execute(topLevelAPI));
+                    files.add(new File(filename));
+                } catch (Exception e) {
+                    throw new RuntimeException("Could not generate LoopBackAPI", e);
+                }
+            }
         }
+
         if (System.getProperty("debugOperations") != null) {
             LOGGER.info("############ Operation info ############");
             Json.prettyPrint(allOperations);
@@ -802,5 +851,15 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
         config.postProcessModels(objs);
 
         return objs;
+    }
+
+    class GeneratedAPI {
+        public String modelClassName;
+
+        public String apiClassName;
+
+        public String apiVarName;
+
+        public boolean hasMore;
     }
 }
