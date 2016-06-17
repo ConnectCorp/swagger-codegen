@@ -195,6 +195,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("LICENSE.mustache", "", "LICENSE"));
 
         if (useRealm) {
+            supportingFiles.add(new SupportingFile("RealmListTransform.mustache", realmFileFolder(), "RealmListTransform.swift"));
+            supportingFiles.add(new SupportingFile("RealmOptionalTransform.mustache", realmFileFolder(), "RealmOptionalTransform.swift"));
             supportingFiles.add(new SupportingFile("RealmWrappers.mustache", realmFileFolder(), "RealmWrappers.swift"));
 
             typeMapping.put("object", "NSData");
