@@ -1,0 +1,21 @@
+Pod::Spec.new do |s|
+    s.name = '{{projectName}}'
+    s.ios.deployment_target = '8.0'
+    s.osx.deployment_target = '10.9'{{#projectVersion}}
+    s.version = '{{projectVersion}}'{{/projectVersion}}{{#projectAuthors}}
+    s.author = '{{projectAuthors}}'{{/projectAuthors}}{{#projectHomepage}}
+    s.homepage = '{{projectHomepage}}'{{/projectHomepage}}{{#projectSummary}}
+    s.summary = '{{projectSummary}}'{{/projectSummary}}{{#projectSource}}
+    s.source = { :git => '{{projectSource}}'{{#projectVersion}}, :tag => '{{projectVersion}}'{{/projectVersion}} }{{/projectSource}}{{#projectLicense}}
+    s.license = { :type => '{{projectLicense}}', :file => 'LICENSE' }{{/projectLicense}}
+    s.source_files = '{{projectName}}/**/*.swift'
+    s.dependency 'RxSwift'
+    s.dependency 'RxCocoa'
+    s.dependency 'NSObject+Rx'
+    s.dependency 'ObjectMapper'
+    s.dependency 'Alamofire'
+    s.dependency 'AlamofireObjectMapper'
+    s.dependency 'RxAlamofire'{{#useRealm}}
+    s.dependency 'RealmSwift'{{/useRealm}}{{#syncWithRealm}}
+    s.dependency 'LoopBackQuery'{{/syncWithRealm}}
+end

@@ -99,6 +99,8 @@ public interface CodegenConfig {
 
     Map<String, String> modelTestTemplateFiles();
 
+    Map<String, String> topLevelAPITemplateFiles();
+
     Set<String> languageSpecificPrimitives();
 
     void preprocessSwagger(Swagger swagger);
@@ -134,6 +136,8 @@ public interface CodegenConfig {
     String apiFilename(String templateName, String tag);
 
     String apiTestFilename(String templateName, String tag);
+
+    String topLevelAPIFilename(String templateName);
 
     boolean shouldOverwrite(String filename);
 
