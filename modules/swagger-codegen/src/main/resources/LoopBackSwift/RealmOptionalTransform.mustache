@@ -13,6 +13,9 @@ public class RealmOptionalTransform<T : RealmOptionalType> : TransformType {
     public typealias Object = RealmOptional<T>
     public typealias JSON = T
 
+    public init() {
+    }
+
     public func transformFromJSON(value:AnyObject?) -> RealmOptional<T>? {
         return RealmOptional<T>(value as? T)
     }

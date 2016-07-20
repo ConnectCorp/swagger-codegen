@@ -114,7 +114,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
                         "true", "lazy", "operator", "in", "COLUMN", "left", "private", "return", "FILE", "mutating", "protocol",
                         "switch", "FUNCTION", "none", "public", "where", "LINE", "nonmutating", "static", "while", "optional",
                         "struct", "override", "subscript", "postfix", "typealias", "precedence", "var", "prefix", "Protocol",
-                        "required", "right", "set", "Type", "unowned", "weak", "realm"
+                        "required", "right", "set", "Type", "unowned", "weak", "realm", "hash"
                 )
         );
     }
@@ -301,6 +301,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
         if (useRealm && property.name.equals(modelId)) {
             property.required = true;
+            property.isId = true;
         }
     }
 

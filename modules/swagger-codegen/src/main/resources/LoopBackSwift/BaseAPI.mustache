@@ -62,7 +62,7 @@ public struct Parameters {
     var form:[String : AnyObject]
     var headers:[String : String]
 
-    init(query:[String : AnyObject] = [:], form:[String : AnyObject] = [:], headers:[String : String] = [:]) {
+    public init(query:[String : AnyObject] = [:], form:[String : AnyObject] = [:], headers:[String : String] = [:]) {
         self.query = query
         self.form = form
         self.headers = headers

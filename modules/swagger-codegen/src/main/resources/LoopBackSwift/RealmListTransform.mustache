@@ -15,6 +15,9 @@ public class RealmListTransform<T : Object where T : Mappable> : TransformType {
 
     let mapper = Mapper<T>()
 
+    public init() {
+    }
+
     public func transformFromJSON(value:AnyObject?) -> List<T>? {
         let list = List<T>()
 
