@@ -46,6 +46,8 @@ public class CodegenProperty {
     public Boolean isRaw;
     public Boolean hasMoreRaw;
 
+    public Boolean isId;
+
     @Override
     public int hashCode()
     {
