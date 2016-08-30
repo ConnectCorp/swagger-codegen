@@ -37,11 +37,7 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable { {{#var
         get {
             guard let _{{name}} = _{{name}} else { return [ : ] }
 
-            do {
-                return try NSJSONSerialization.JSONObjectWithData(_{{name}}, options: NSJSONReadingOptions()) as? [String : AnyObject]
-            } catch {
-                return [ : ]
-            }
+            return _{{name}}.toJSON()
         }
 
         set {
@@ -49,21 +45,13 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable { {{#var
 
             if let realm = realm {
                 try! realm.write { [weak self] in
-                   do {
-                        self?._{{name}} = try NSJSONSerialization.dataWithJSONObject(value, options: NSJSONWritingOptions())
-                    } catch {
-                        self?._{{name}} = nil
-                    }
+                    self?._{{name}} = NSData.fromJSON(value)
                 }
 
                 return
             }
 
-            do {
-                _{{name}} = try NSJSONSerialization.dataWithJSONObject(value, options: NSJSONWritingOptions())
-            } catch {
-                _{{name}} = nil
-            }
+            _{{name}} = NSData.fromJSON(value)
         }
     }{{/isRaw}}{{/isEnum}}{{#hasMore}}
 {{/hasMore}}{{/useRealm}}{{^useRealm}}
@@ -123,8 +111,8 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable { {{#var
                 }
             }
         }
-{{#vars}}{{^isId}}
-        {{^isListContainer}}{{^isNumeric}}_{{name}} <- map["{{baseName}}"]{{/isNumeric}}{{#isNumeric}}{{#required}}_{{name}} <- map["{{baseName}}"]{{/required}}{{^required}}_{{name}} <- (map["{{baseName}}"], RealmOptionalTransform<{{datatype}}>()){{/required}}{{/isNumeric}}{{/isListContainer}}{{#isListContainer}}{{#items}}{{^isPrimitiveType}}_{{name}} <- (map["{{baseName}}"], RealmListTransform<{{datatype}}>()){{/isPrimitiveType}}{{#isPrimitiveType}}
+{{#vars}}{{^isRaw}}{{^isId}}
+        {{^isListContainer}}{{^isNumeric}}{{^isDate}}_{{name}} <- map["{{baseName}}"]{{/isDate}}{{#isDate}}_{{name}} <- (map["{{baseName}}"], ISO8601ExtendedDateTransform()){{/isDate}}{{/isNumeric}}{{#isNumeric}}{{#required}}_{{name}} <- map["{{baseName}}"]{{/required}}{{^required}}_{{name}} <- (map["{{baseName}}"], RealmOptionalTransform<{{datatype}}>()){{/required}}{{/isNumeric}}{{/isListContainer}}{{#isListContainer}}{{#items}}{{^isPrimitiveType}}_{{name}} <- (map["{{baseName}}"], RealmListTransform<{{datatype}}>()){{/isPrimitiveType}}{{#isPrimitiveType}}
         var {{name}}:[{{datatype}}]? = nil
         {{name}} <- map["{{baseName}}"]
 
@@ -134,11 +122,20 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable { {{#var
             self.{{name}}.append(value)
         }
         {{/isPrimitiveType}}{{/items}}{{/isListContainer}}{{/isId}}{{#isId}}
+        {{name}} <- map["{{baseName}}"]{{/isId}}{{/isRaw}}{{#isRaw}}
 
-        if realm == nil {
-            _{{name}} <- map["{{baseName}}"]
+        switch map.mappingType {
+        case .ToJSON:
+            var json = _{{name}}?.toJSON()
+            json <- map["{{name}}"]
+
+        case .FromJSON:
+            var json: [String : AnyObject] = [ : ]
+            json <- map["{{name}}"]
+
+            _{{name}} = NSData.fromJSON(json)
         }
-{{/isId}}{{#hasMore}}{{/hasMore}}{{/vars}}{{/useRealm}}
+{{/isRaw}}{{#hasMore}}{{/hasMore}}{{/vars}}{{/useRealm}}
     }
 }
 {{/model}}

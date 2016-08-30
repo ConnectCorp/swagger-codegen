@@ -94,7 +94,7 @@ public protocol CRUDAPI : API {
 
     func upsert(data:ModelType) throws -> Observable<ModelType>
 
-    func findById(id:String, filter:String) throws -> Observable<ModelType>
+    func findById(id:Int64, filter:String) throws -> Observable<ModelType>
 
     func findOne(filter:String) throws -> Observable<ModelType>
 
@@ -102,7 +102,7 @@ public protocol CRUDAPI : API {
 
     func count(_where:String) throws -> Observable<CountType>
 
-    func deleteById(id:String) throws -> Observable<DeleteType>
+    func deleteById(id:Int64) throws -> Observable<DeleteType>
 }
 
 extension API {

@@ -73,7 +73,7 @@ import RxSwift
         throw UnsupportedOperation()
     }
 {{/hasUpsert}}{{^hasFindById}}
-    public func findById(id:String, filter:String) throws -> Observable<{{baseName}}> {
+    public func findById(id:Int64, filter:String) throws -> Observable<{{baseName}}> {
         throw UnsupportedOperation()
     }
 {{/hasFindById}}{{^hasFindOne}}
@@ -89,7 +89,7 @@ import RxSwift
         throw UnsupportedOperation()
     }
 {{/hasCount}}{{^hasDeleteById}}
-    public func deleteById(id:String) throws -> Observable<{{deleteReturnType}}> {
+    public func deleteById(id:Int64) throws -> Observable<{{deleteReturnType}}> {
         throw UnsupportedOperation()
     }
 {{/hasDeleteById}}{{/generateDataAPI}}
