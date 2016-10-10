@@ -560,6 +560,12 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         if (isReservedWord(property.datatypeWithEnum) || name.equals(property.datatypeWithEnum)) {
             property.datatypeWithEnum = escapeReservedWord(property.datatypeWithEnum);
         }
+
+        if (property.required != null && property.required) {
+            property.defaultValue = property.datatypeWithEnum + "(rawValue: \"" + property.defaultValue + "\")!";
+        } else {
+            property.defaultValue = "nil";
+        }
     }
 
     private String toSwiftEnumName(String name) {
@@ -584,7 +590,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
             String param = matcher.group().substring(1, matcher.group().length() - 1);
             builder.append("\\(");
-            builder.append(param);
+            builder.append(toVarName(param));
 //            builder.append(".URLEscapedString");
             builder.append(")");
 

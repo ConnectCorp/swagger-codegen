@@ -16,22 +16,22 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable { {{#var
         case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
     }
 {{/isEnum}}{{/vars}}{{#vars}}{{#useRealm}}
-    {{#isEnum}}public var {{name}}: {{{datatypeWithEnum}}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isEnum}}{{^isEnum}}private{{#isNumeric}}{{#required}} dynamic{{/required}}{{/isNumeric}}{{^isNumeric}}{{^isListContainer}} dynamic{{/isListContainer}}{{/isNumeric}} var _{{name}}{{#isNumeric}}{{#required}}: {{datatype}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/required}}{{^required}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/required}}{{/isNumeric}}{{^isNumeric}}{{#isListContainer}} = List<{{#items}}{{#isPrimitiveType}}Realm{{/isPrimitiveType}}{{datatype}}{{/items}}>(){{/isListContainer}}{{^isListContainer}}: {{{datatype}}}{{^required}}?{{/required}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isListContainer}}{{/isNumeric}}
+    private{{#isNumeric}}{{#required}} dynamic{{/required}}{{/isNumeric}}{{^isNumeric}}{{^isListContainer}} dynamic{{/isListContainer}}{{/isNumeric}} var _{{name}}{{#isNumeric}}{{#required}}: {{datatype}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/required}}{{^required}} = RealmOptional<{{datatype}}>({{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}){{/required}}{{/isNumeric}}{{^isNumeric}}{{#isListContainer}} = List<{{#items}}{{#isPrimitiveType}}Realm{{/isPrimitiveType}}{{datatype}}{{/items}}>(){{/isListContainer}}{{^isListContainer}}: {{{datatype}}}{{^required}}?{{/required}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{/isListContainer}}{{/isNumeric}}
 
-    {{^isRaw}}public var {{name}}: {{datatype}}{{^required}}{{^isListContainer}}?{{/isListContainer}}{{/required}} {
+    {{^isRaw}}public var {{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{^required}}{{^isListContainer}}?{{/isListContainer}}{{/required}} {
         get {
-            return {{#isListContainer}}Array(_{{name}}){{/isListContainer}}{{^isListContainer}}_{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}}{{/isListContainer}}
+            return {{#isEnum}}{{datatypeWithEnum}}(rawValue: _{{name}}{{^required}} ?? ""{{/required}}){{#required}}!{{/required}}{{/isEnum}}{{^isEnum}}{{#isListContainer}}Array(_{{name}}){{/isListContainer}}{{^isListContainer}}_{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}}{{/isListContainer}}{{/isEnum}}
         }
 
         set {
             {{#isId}}if realm == nil {
                 _{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}} = {{#isListContainer}}List(newValue){{/isListContainer}}{{^isListContainer}}newValue{{/isListContainer}}
             }{{/isId}}{{^isId}}if let realm = realm {
-                try! realm.write { [weak self] in self?._{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}} = {{#isListContainer}}List(newValue){{/isListContainer}}{{^isListContainer}}newValue{{/isListContainer}} }
+                try! realm.write { [weak self] in self?._{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}} = {{#isEnum}}newValue{{^required}}?{{/required}}.rawValue{{/isEnum}}{{^isEnum}}{{#isListContainer}}List(newValue){{/isListContainer}}{{^isListContainer}}newValue{{/isListContainer}}{{/isEnum}} }
                 return
             }
 
-            _{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}} = {{#isListContainer}}List(newValue){{/isListContainer}}{{^isListContainer}}newValue{{/isListContainer}}{{/isId}}
+            _{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}} = {{#isEnum}}newValue{{^required}}?{{/required}}.rawValue{{/isEnum}}{{^isEnum}}{{#isListContainer}}List(newValue){{/isListContainer}}{{^isListContainer}}newValue{{/isListContainer}}{{/isEnum}}{{/isId}}
         }
     }{{/isRaw}}{{#isRaw}}public var {{name}}: [String : AnyObject]? {
         get {
@@ -53,9 +53,9 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable { {{#var
 
             _{{name}} = NSData.fromJSON(value)
         }
-    }{{/isRaw}}{{/isEnum}}{{#hasMore}}
+    }{{/isRaw}}{{#hasMore}}
 {{/hasMore}}{{/useRealm}}{{^useRealm}}
-    public var {{name}}:{{datatype}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}
+    public var {{name}}:{{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}?{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}
 {{/useRealm}}{{/vars}}
 
     public {{#useRealm}}override {{/useRealm}}var description: String {
@@ -92,7 +92,7 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable { {{#var
     }
 
     public func mapping(map: Map) {
-        {{^useRealm}}{{#vars}}{{name}} <- map["{{baseName}}"]{{#hasMore}}
+        {{^useRealm}}{{#vars}}{{name}} <- {{^isDate}}map["{{baseName}}"]{{/isDate}}{{#isDate}}(map["{{baseName}}"], ISO8601ExtendedDateTransform()){{/isDate}}{{#hasMore}}
         {{/hasMore}}{{/vars}}{{/useRealm}}{{#useRealm}}var inWriteTransaction = false
 
         if let realm = realm where !(realm.inWriteTransaction) {

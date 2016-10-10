@@ -10,12 +10,24 @@ import ObjectMapper
 
 public class ISO8601ExtendedDateTransform : DateFormatterTransform {
 
+    private let alternateFormatterTransform: DateFormatterTransform
+
     public init() {
         let formatter = NSDateFormatter()
 
         formatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
 
+        let alternateFormatter = NSDateFormatter()
+        alternateFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        alternateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        alternateFormatterTransform = DateFormatterTransform(dateFormatter: alternateFormatter)
+
         super.init(dateFormatter: formatter)
+    }
+
+
+    public override func transformFromJSON(value: AnyObject?) -> NSDate? {
+        return super.transformFromJSON(value) ?? alternateFormatterTransform.transformFromJSON(value)
     }
 }
