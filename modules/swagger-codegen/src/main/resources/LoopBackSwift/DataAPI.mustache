@@ -46,7 +46,7 @@ public class DataAPI {
         }
     }
 
-    public func findById<ModelType>(type:ModelType.Type, id:String, filter:String) throws -> Observable<ModelType> {
+    public func findById<ModelType>(type:ModelType.Type, id:Int64, filter:String) throws -> Observable<ModelType> {
         {{#apis}}if type.self == {{modelClassName}}.self {
             return try {{apiVarName}}.findById(id, filter: filter).flatMap { return Observable.just($0 as! ModelType) }
         }{{#hasMore}}
@@ -102,7 +102,7 @@ public class DataAPI {
         }
     }
 
-    public func deleteById<ModelType, DeleteType>(type:ModelType.Type, id:String) throws -> Observable<DeleteType> {
+    public func deleteById<ModelType, DeleteType>(type:ModelType.Type, id:Int64) throws -> Observable<DeleteType> {
         {{#apis}}if type.self == {{modelClassName}}.self {
             return try {{apiVarName}}.deleteById(id).flatMap { return Observable.just($0 as! DeleteType) }
         }{{#hasMore}}

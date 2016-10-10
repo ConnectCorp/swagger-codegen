@@ -1,0 +1,27 @@
+extension Int64 : _ObjectiveCBridgeable {
+
+    public init(_ number: NSNumber) {
+        self.init(number.longLongValue)
+    }
+
+    public func _bridgeToObjectiveC() -> NSNumber {
+        return NSNumber(longLong: self)
+    }
+
+    public static func _getObjectiveCType() -> Any.Type {
+        return NSNumber.self
+    }
+
+    public static func _isBridgedToObjectiveC() -> Bool {
+        return true
+    }
+
+    public static func _forceBridgeFromObjectiveC(source: NSNumber, inout result: Int64?) {
+        result = source.longLongValue
+    }
+
+    public static func _conditionallyBridgeFromObjectiveC(source: NSNumber, inout result: Int64?) -> Bool {
+        result = source.longLongValue
+        return true
+    }
+}

@@ -114,7 +114,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
                         "true", "lazy", "operator", "in", "COLUMN", "left", "private", "return", "FILE", "mutating", "protocol",
                         "switch", "FUNCTION", "none", "public", "where", "LINE", "nonmutating", "static", "while", "optional",
                         "struct", "override", "subscript", "postfix", "typealias", "precedence", "var", "prefix", "Protocol",
-                        "required", "right", "set", "Type", "unowned", "weak", "realm", "hash"
+                        "required", "right", "set", "Type", "unowned", "weak", "realm", "hash", "description"
                 )
         );
     }
@@ -133,11 +133,12 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         typeMapping.put("char", "Character");
         typeMapping.put("short", "Int");
         typeMapping.put("int", "Int");
+        typeMapping.put("int64", "Int64");
         typeMapping.put("long", "Int");
-        typeMapping.put("integer", "Int");
+        typeMapping.put("integer", "Int64");
         typeMapping.put("Integer", "Int");
         typeMapping.put("float", "Float");
-        typeMapping.put("number", "Int");
+        typeMapping.put("number", "Int64");
         typeMapping.put("double", "Double");
         typeMapping.put("object", "AnyObject");
         typeMapping.put("file", "NSURL");
@@ -191,6 +192,9 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("APIError.mustache", utilFileFolder(), "APIError.swift"));
         supportingFiles.add(new SupportingFile("RxAlamofireObjectMapping.mustache", utilFileFolder(), "RxAlamofireObjectMapping.swift"));
         supportingFiles.add(new SupportingFile("Primitives+URLEscapedString.mustache", utilFileFolder(), "Primitives+URLEscapedString.swift"));
+        supportingFiles.add(new SupportingFile("NSData+JSON.mustache", utilFileFolder(), "NSData+JSON.swift"));
+        supportingFiles.add(new SupportingFile("Int64+_ObjectiveCBridgeable.mustache", utilFileFolder(), "Int64+_ObjectiveCBridgeable.swift"));
+        supportingFiles.add(new SupportingFile("ISO8601ExtendedDateTransform.mustache", utilFileFolder(), "ISO8601ExtendedDateTransform.swift"));
         supportingFiles.add(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
         supportingFiles.add(new SupportingFile("LICENSE.mustache", "", "LICENSE"));
 
@@ -287,7 +291,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
             property.isDouble = true;
         }
 
-        if (property.datatype.equals("Int")) {
+        if (property.datatype.equals("Int") || property.datatype.equals("Int64")) {
             property.isInteger = true;
         }
 
@@ -402,6 +406,13 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         }
 
         return initialCaps(name) + "API";
+    }
+
+    @Override
+    public String toVarName(String s) {
+        String name = camelize(super.toVarName(s), true);
+
+        return isReservedWord(name) ? escapeReservedWord(name) : name;
     }
 
     @Override
@@ -549,6 +560,12 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         if (isReservedWord(property.datatypeWithEnum) || name.equals(property.datatypeWithEnum)) {
             property.datatypeWithEnum = escapeReservedWord(property.datatypeWithEnum);
         }
+
+        if (property.required != null && property.required) {
+            property.defaultValue = property.datatypeWithEnum + "(rawValue: \"" + property.defaultValue + "\")!";
+        } else {
+            property.defaultValue = "nil";
+        }
     }
 
     private String toSwiftEnumName(String name) {
@@ -573,8 +590,8 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
             String param = matcher.group().substring(1, matcher.group().length() - 1);
             builder.append("\\(");
-            builder.append(param);
-            builder.append(".URLEscapedString");
+            builder.append(toVarName(param));
+//            builder.append(".URLEscapedString");
             builder.append(")");
 
             cursor = matcher.end();
