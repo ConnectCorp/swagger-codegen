@@ -410,7 +410,7 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
 
     @Override
     public String toVarName(String s) {
-        String name = camelize(super.toVarName(s), true);
+        String name = s.charAt(0) == '_' ? '_' + camelize(super.toVarName(s.substring(1)), true) : camelize(super.toVarName(s), true);
 
         return isReservedWord(name) ? escapeReservedWord(name) : name;
     }
