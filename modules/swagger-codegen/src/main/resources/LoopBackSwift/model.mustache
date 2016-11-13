@@ -20,18 +20,27 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable { {{#var
 
     {{^isRaw}}public var {{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{^required}}{{^isListContainer}}?{{/isListContainer}}{{/required}} {
         get {
-            return {{#isEnum}}{{datatypeWithEnum}}(rawValue: _{{name}}{{^required}} ?? ""{{/required}}){{#required}}!{{/required}}{{/isEnum}}{{^isEnum}}{{#isListContainer}}Array(_{{name}}){{/isListContainer}}{{^isListContainer}}_{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}}{{/isListContainer}}{{/isEnum}}
+            return {{#isEnum}}{{datatypeWithEnum}}(rawValue: _{{name}}{{^required}} ?? ""{{/required}}){{#required}}!{{/required}}{{/isEnum}}{{^isEnum}}{{#isListContainer}}Array(_{{#items}}{{name}}{{#isPrimitiveType}}.map { $0.value }{{/isPrimitiveType}}{{/items}}){{/isListContainer}}{{^isListContainer}}_{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}}{{/isListContainer}}{{/isEnum}}
         }
 
         set {
             {{#isId}}if realm == nil {
                 _{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}} = {{#isListContainer}}List(newValue){{/isListContainer}}{{^isListContainer}}newValue{{/isListContainer}}
             }{{/isId}}{{^isId}}if let realm = realm {
-                try! realm.write { [weak self] in self?._{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}} = {{#isEnum}}newValue{{^required}}?{{/required}}.rawValue{{/isEnum}}{{^isEnum}}{{#isListContainer}}List(newValue){{/isListContainer}}{{^isListContainer}}newValue{{/isListContainer}}{{/isEnum}} }
+                try! realm.write { [weak self] in self?._{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}} = {{#isEnum}}newValue{{^required}}?{{/required}}.rawValue{{/isEnum}}{{^isEnum}}{{#isListContainer}}{{#items}}{{^isPrimitiveType}}List(newValue){{/isPrimitiveType}}{{#isPrimitiveType}}List(newValue.map { primitive in
+                        var wrapped = Realm{{datatype}}()
+                        wrapped.value = primitive
+                        return wrapped
+                    })
+                {{/isPrimitiveType}}{{/items}}{{/isListContainer}}{{^isListContainer}}newValue{{/isListContainer}}{{/isEnum}} }
                 return
             }
 
-            _{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}} = {{#isEnum}}newValue{{^required}}?{{/required}}.rawValue{{/isEnum}}{{^isEnum}}{{#isListContainer}}List(newValue){{/isListContainer}}{{^isListContainer}}newValue{{/isListContainer}}{{/isEnum}}{{/isId}}
+            _{{name}}{{#isNumeric}}{{^required}}.value{{/required}}{{/isNumeric}} = {{#isEnum}}newValue{{^required}}?{{/required}}.rawValue{{/isEnum}}{{^isEnum}}{{#isListContainer}}{{#items}}{{^isPrimitiveType}}List(newValue){{/isPrimitiveType}}{{#isPrimitiveType}}List(newValue.map { primitive in
+                var wrapped = Realm{{datatype}}()
+                wrapped.value = primitive
+                return wrapped
+            }){{/isPrimitiveType}}{{/items}}{{/isListContainer}}{{^isListContainer}}newValue{{/isListContainer}}{{/isEnum}}{{/isId}}
         }
     }{{/isRaw}}{{#isRaw}}public var {{name}}: [String : AnyObject]? {
         get {
@@ -112,16 +121,7 @@ public class {{classname}} : {{#useRealm}}Object, {{/useRealm}}Mappable { {{#var
             }
         }
 {{#vars}}{{^isRaw}}{{^isId}}
-        {{^isListContainer}}{{^isNumeric}}{{^isDate}}_{{name}} <- map["{{baseName}}"]{{/isDate}}{{#isDate}}_{{name}} <- (map["{{baseName}}"], ISO8601ExtendedDateTransform()){{/isDate}}{{/isNumeric}}{{#isNumeric}}{{#required}}_{{name}} <- map["{{baseName}}"]{{/required}}{{^required}}_{{name}} <- (map["{{baseName}}"], RealmOptionalTransform<{{datatype}}>()){{/required}}{{/isNumeric}}{{/isListContainer}}{{#isListContainer}}{{#items}}{{^isPrimitiveType}}_{{name}} <- (map["{{baseName}}"], RealmListTransform<{{datatype}}>()){{/isPrimitiveType}}{{#isPrimitiveType}}
-        var {{name}}:[{{datatype}}]? = nil
-        {{name}} <- map["{{baseName}}"]
-
-        {{name}}?.forEach { data in
-            let value = Realm{{datatype}}()
-            value.value = data
-            self.{{name}}.append(value)
-        }
-        {{/isPrimitiveType}}{{/items}}{{/isListContainer}}{{/isId}}{{#isId}}
+        {{^isListContainer}}{{^isNumeric}}{{^isDate}}_{{name}} <- map["{{baseName}}"]{{/isDate}}{{#isDate}}_{{name}} <- (map["{{baseName}}"], ISO8601ExtendedDateTransform()){{/isDate}}{{/isNumeric}}{{#isNumeric}}{{#required}}_{{name}} <- map["{{baseName}}"]{{/required}}{{^required}}_{{name}} <- (map["{{baseName}}"], RealmOptionalTransform<{{datatype}}>()){{/required}}{{/isNumeric}}{{/isListContainer}}{{#isListContainer}}{{#items}}{{^isPrimitiveType}}_{{name}} <- (map["{{baseName}}"], RealmListTransform<{{datatype}}>()){{/isPrimitiveType}}{{#isPrimitiveType}}_{{name}} <- (map["{{baseName}}"], Realm{{datatype}}ListTransform()){{/isPrimitiveType}}{{/items}}{{/isListContainer}}{{/isId}}{{#isId}}
         {{name}} <- map["{{baseName}}"]{{/isId}}{{/isRaw}}{{#isRaw}}
 
         switch map.mappingType {

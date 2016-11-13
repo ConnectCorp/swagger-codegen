@@ -197,11 +197,12 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         supportingFiles.add(new SupportingFile("ISO8601ExtendedDateTransform.mustache", utilFileFolder(), "ISO8601ExtendedDateTransform.swift"));
         supportingFiles.add(new SupportingFile("Podspec.mustache", "", projectName + ".podspec"));
         supportingFiles.add(new SupportingFile("LICENSE.mustache", "", "LICENSE"));
-
+        supportingFiles.add(new SupportingFile("NSDate+toString.mustache", utilFileFolder(), "NSDate+toString.swift"));
         if (useRealm) {
             supportingFiles.add(new SupportingFile("RealmListTransform.mustache", realmFileFolder(), "RealmListTransform.swift"));
             supportingFiles.add(new SupportingFile("RealmOptionalTransform.mustache", realmFileFolder(), "RealmOptionalTransform.swift"));
             supportingFiles.add(new SupportingFile("RealmWrappers.mustache", realmFileFolder(), "RealmWrappers.swift"));
+            supportingFiles.add(new SupportingFile("RealmInt64ListTransform.mustache", realmFileFolder(), "RealmInt64ListTransform.swift"));
 
             typeMapping.put("object", "NSData");
         }
@@ -394,6 +395,10 @@ public class LoopBackSwiftClientCodegen extends DefaultCodegen implements Codege
         if (useRealm && property.name.equals(modelId)) {
             property.required = true;
             property.defaultValue = "0";
+        }
+
+        if (property.baseType.equals("Int64")) {
+            property.isPrimitiveType = true;
         }
 
         return property;

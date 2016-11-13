@@ -45,16 +45,16 @@ import RxSwift
             path: "{{path}}"{{/hasPath}}{{#hasHTTPParams}},
             params: Parameters(
                 {{#hasQueryParams}}query: [
-    {{#queryParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{baseName}}" : {{paramName}}{{#hasMore}},
+    {{#queryParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{baseName}}" : {{paramName}}{{#isDate}}.toString(){{/isDate}}{{#hasMore}},
     {{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/queryParams}}{{/hasQueryParams}}{{#hasFormParams}}{{#hasQueryParams}},
             {{/hasQueryParams}}form: [
-    {{#formParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{baseName}}" : {{paramName}}{{#hasMore}},
+    {{#formParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{baseName}}" : {{paramName}}{{#isDate}}.toString(){{/isDate}}{{#hasMore}},
     {{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/formParams}}{{/hasFormParams}}{{#hasHeaderParams}}{{#hasFormParams}}{{^hasQueryParams}},
             {{/hasQueryParams}}{{#hasQueryParams}},
             {{/hasQueryParams}}{{/hasFormParams}}headers: [
-    {{#headerParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{baseName}}" : {{paramName}}{{#hasMore}},
+    {{#headerParams}}{{^secondaryParam}}{{/secondaryParam}}                "{{baseName}}" : {{paramName}}{{#isDate}}.toString(){{/isDate}}{{#hasMore}},
     {{/hasMore}}{{^hasMore}}
                 ]{{/hasMore}}{{/headerParams}}{{/hasHeaderParams}}
             ){{/hasHTTPParams}}{{#hasAuthMethods}},
